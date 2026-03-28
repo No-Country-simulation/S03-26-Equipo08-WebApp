@@ -25,6 +25,7 @@ const DrawerList = (
         <nav>
             <ul style={{marginLeft:'11%' , color:'white'}}>
                 <li style={{marginTop:'12%'}}><DashboardIcon/><NavLink style={{marginLeft:'3%' , fontWeight:'bold'}} to="/dashboard">Dashboard</NavLink></li>
+                <li style={{marginTop:'12%' , background:'lighskyblue' , padding:'5p%' , borderRadius:'10px'}}><TextsmsIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="nuevoTestimonio">Nuevo Testimonio</NavLink></li>
                 <li style={{marginTop:'12%'}}><TextsmsIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="testimonios">Testimonios</NavLink></li>
                 <li style={{marginTop:'12%'}}><DownloadDoneIcon/><a style={{marginLeft:'3%' , fontWeight:'bold'}} href="">Moderación</a></li>
                 <li style={{marginTop:'12%'}}><CategoryIcon/><a style={{marginLeft:'3%', fontWeight:'bold'}} href="">Categorias</a></li>

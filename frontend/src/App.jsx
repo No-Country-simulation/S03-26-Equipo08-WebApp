@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Header from './components/home/Header'
 import './App.css'
-import { Route, Routes } from "react-router";
+import { Route, Routes, Navigate } from "react-router";
 import DashboardLayout from './components/dashboard/DashboardLayout';
 import FirstPage from './components/dashboard/FirstPage';
 import Testimonios from './components/dashboard/Testimonios';
@@ -11,6 +11,7 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Header/>} />
         <Route path='/dashboard' element={<DashboardLayout/>}>
           <Route index element={<FirstPage/>}/>

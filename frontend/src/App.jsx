@@ -6,6 +6,7 @@ import DashboardLayout from './components/dashboard/DashboardLayout';
 import FirstPage from './components/dashboard/FirstPage';
 import Testimonios from './components/dashboard/Testimonios';
 import NuevoTestimonio from './components/dashboard/NuevoTestimonio';
+import Moderacion from './components/dashboard/Moderacion';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
           <Route index element={<FirstPage/>}/>
           <Route path='nuevoTestimonio' element={<NuevoTestimonio/>}></Route>
           <Route path='testimonios' element={<Testimonios/>}></Route>
+          <Route path='moderación' element={<Moderacion/>}></Route>
         </Route>
       </Routes>
     </>

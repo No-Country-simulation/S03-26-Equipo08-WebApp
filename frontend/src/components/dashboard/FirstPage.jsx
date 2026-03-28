@@ -1,6 +1,7 @@
 import TextsmsIcon from '@mui/icons-material/Textsms';
 
 export function FirstPage () {
+
     return (
         <>
             <h2 style={{fontSize:'xx-large'}} className="text-2xl font-bold">Dashboard</h2>
@@ -167,7 +168,6 @@ export function FirstPage () {
   </div>
 </div>
 </div>
-
         </>
     )
 }

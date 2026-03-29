@@ -10,19 +10,16 @@ import {
   MessageSquareQuote,
   Code2,
   Globe,
-  Star,
   Layers,
   LogOut,
-  Settings,
-  MoreVertical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Avatar, 
   AvatarFallback, 
-  AvatarImage 
 } from "@/components/ui/avatar";
+import Image from "next/image";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -34,13 +31,12 @@ const navigation = [
 ];
 
 interface SidebarProps {
-  isOpen: boolean;
   setIsOpen: (val: boolean) => void;
   isCollapsed: boolean;
   setIsCollapsed: (val: boolean) => void;
 }
 
-export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }: SidebarProps) {
+export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed }: SidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -51,20 +47,43 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
         isCollapsed ? "justify-center px-0" : "justify-between px-6"
       )}>
         <Link href="/" className="flex items-center group">
-          <div className="p-2 bg-blue-600 rounded-lg shadow-sm shrink-0">
+          {/* <div className="p-2 bg-blue-600 rounded-lg shadow-sm shrink-0">
              <Star className="text-white w-5 h-5 fill-white" />
-          </div>
-          <motion.span
-            animate={{ 
-              width: isCollapsed ? 0 : "auto",
-              opacity: isCollapsed ? 0 : 1,
-              marginLeft: isCollapsed ? 0 : 12 
-            }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="text-xl font-bold text-gray-900 tracking-tight whitespace-nowrap overflow-hidden"
+          </div> */}
+          <motion.div 
+            whileHover={{ rotateY: 180 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="[perspective:1000px] shrink-0"
           >
-            Testimonials
-          </motion.span>
+            <Image
+              src="/logo-removebg-cuadrado.png"
+              alt="Logo"
+              width={36}
+              height={36}
+              style={{ height: 'auto' }}
+              className="rounded-lg object-contain"
+            />
+          </motion.div>
+          <AnimatePresence mode="wait">
+            {!isCollapsed && (
+              <motion.div
+                initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                animate={{ opacity: 1, width: "auto", marginLeft: 8 }}
+                exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden whitespace-nowrap"
+              >
+                <Image
+                  src="/logo-removebg-texto.png"
+                  alt="TestimonialHub"
+                  width={130}
+                  height={32}
+                  style={{ height: 'auto' }}
+                  className="object-contain shrink-0"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Link>
         
         {/* Toggle Button for Desktop */}
@@ -113,17 +132,19 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
                 isActive ? "text-blue-600" : "text-gray-400 group-hover:text-gray-600"
               )} />
               
-              <motion.span
-                animate={{ 
-                  width: isCollapsed ? 0 : "auto",
-                  opacity: isCollapsed ? 0 : 1,
-                  marginLeft: isCollapsed ? 0 : 12 
-                }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="whitespace-nowrap overflow-hidden font-medium text-sm"
-              >
-                {item.name}
-              </motion.span>
+              <AnimatePresence mode="wait">
+                {!isCollapsed && (
+                  <motion.span
+                    initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                    animate={{ opacity: 1, width: "auto", marginLeft: 12 }}
+                    exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                    transition={{ duration: 0.2, ease: "easeInOut" }}
+                    className="whitespace-nowrap overflow-hidden font-medium text-sm"
+                  >
+                    {item.name}
+                  </motion.span>
+                )}
+              </AnimatePresence>
 
               {isCollapsed && (
                 /* TOOLTIP FOR COLLAPSED MODE */
@@ -157,22 +178,24 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
           isCollapsed ? "justify-center" : "text-left"
         )}>
            <Avatar className="h-8 w-8 shrink-0 rounded-lg shadow-sm border border-gray-100">
-             <AvatarImage src="/dashboard/avatar.jpg" />
+             {/* <AvatarImage src="/dashboard/avatar.jpg" /> */}
              <AvatarFallback className="bg-indigo-600 text-white text-[10px] font-bold">HG</AvatarFallback>
            </Avatar>
            
-           <motion.div 
-             animate={{ 
-               width: isCollapsed ? 0 : "auto",
-               opacity: isCollapsed ? 0 : 1,
-               marginLeft: isCollapsed ? 0 : 12 
-             }}
-             transition={{ duration: 0.2, ease: "easeOut" }}
-             className="flex-1 min-w-0 overflow-hidden"
-           >
-             <p className="text-sm font-bold text-gray-900 truncate">Hernán García</p>
-             <p className="text-[11px] font-medium text-gray-400 truncate">hernan@hub.com</p>
-           </motion.div>
+           <AnimatePresence mode="wait">
+             {!isCollapsed && (
+               <motion.div 
+                 initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                 animate={{ opacity: 1, width: "auto", marginLeft: 12 }}
+                 exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                 transition={{ duration: 0.2, ease: "easeInOut" }}
+                 className="flex-1 min-w-0 overflow-hidden"
+               >
+                 <p className="text-sm font-bold text-gray-900 truncate">Hernán García</p>
+                 <p className="text-[11px] font-medium text-gray-400 truncate">hernan@hub.com</p>
+               </motion.div>
+             )}
+           </AnimatePresence>
 
            <motion.div 
              animate={{ 
@@ -199,7 +222,19 @@ export default function Sidebar({ isOpen, setIsOpen, isCollapsed, setIsCollapsed
           isCollapsed ? "justify-center p-2.5" : "gap-3 px-4 py-2.5"
         )}>
           <LogOut className="w-4 h-4 shrink-0 transition-transform group-hover/logout:-translate-x-0.5" />
-          {!isCollapsed && <span>Cerrar Sesión</span>}
+          <AnimatePresence mode="wait">
+            {!isCollapsed && (
+              <motion.span
+                initial={{ opacity: 0, width: 0, marginLeft: 0 }}
+                animate={{ opacity: 1, width: "auto", marginLeft: 12 }}
+                exit={{ opacity: 0, width: 0, marginLeft: 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
+                className="whitespace-nowrap overflow-hidden"
+              >
+                Cerrar Sesión
+              </motion.span>
+            )}
+          </AnimatePresence>
           
           {isCollapsed && (
              <div className="absolute left-[calc(100%+8px)] px-3 py-1.5 bg-red-600 text-white text-xs font-bold rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 translate-x-1 group-hover:translate-x-3 z-[100] whitespace-nowrap shadow-xl">

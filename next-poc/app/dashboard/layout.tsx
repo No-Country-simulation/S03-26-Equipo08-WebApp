@@ -31,7 +31,6 @@ export default function DashboardLayout({
             className="fixed inset-y-0 left-0 md:relative z-50 bg-white border-r border-gray-100 shadow-sm transition-all duration-150"
           >
             <Sidebar 
-              isOpen={isSidebarOpen} 
               setIsOpen={setIsSidebarOpen} 
               isCollapsed={isCollapsed} 
               setIsCollapsed={setIsCollapsed} 

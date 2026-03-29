@@ -1,3 +1,4 @@
+import { NavLink } from "react-router"
 import logo from "../../assets/logo.png"
 import AboutUs from "./AboutUs"
 
@@ -22,8 +23,8 @@ export function Header () {
         </button>
       </div>
       <div className="hidden lg:flex lg:gap-x-12">
-        <a href="#" className="text-sm/6 font-semibold text-gray-900">Login</a>
-        <a href="#" className="text-sm/6 font-semibold text-gray-900">Register</a>
+        <NavLink to='/login' className="text-sm/6 font-semibold text-gray-900">Login</NavLink>
+        <NavLink to='/register' className="text-sm/6 font-semibold text-gray-900">Register</NavLink>
       </div>
     </nav>
     <el-dialog>

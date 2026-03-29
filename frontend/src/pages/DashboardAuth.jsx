@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Dashboard = () => {
+const DashboardAuth = () => {
   return (
     <div style={{ padding: '50px', textAlign: 'center', fontFamily: 'sans-serif' }}>
       <h1>🚀 ¡Bienvenido al Dashboard, Maxi!</h1>
@@ -9,4 +9,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; // <--- ESTA LÍNEA ES CLAVE
+export default DashboardAuth; // <--- ESTA LÍNEA ES CLAVE

@@ -16,6 +16,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
+import Link from "next/link";
+
 
 const initialTestimonials = [
   { 
@@ -128,10 +130,10 @@ export default function TestimoniosPage() {
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Testimonios</h1>
           <p className="text-gray-500 font-medium">Gestiona todos los testimonios de tus clientes</p>
         </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95">
+        <Link href="/dashboard/ver-testimonios/nuevo" className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95">
           <Plus className="w-5 h-5" />
           Nuevo Testimonio
-        </button>
+        </Link>
       </div>
 
       {/* Controls Bar */}

@@ -87,7 +87,6 @@ export default function Home() {
               alt="Testimonial Hub" 
               fill
               priority
-              loading="eager"
               sizes="160px"
               className="object-contain drop-shadow-xl hover:scale-105 transition-transform" 
             />

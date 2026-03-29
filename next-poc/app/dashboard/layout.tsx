@@ -14,7 +14,10 @@ export default function DashboardLayout({
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] flex overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-700">
+    <div 
+      className="min-h-screen bg-[#f9fafb] flex overflow-hidden font-sans selection:bg-blue-100 selection:text-blue-700"
+      style={{ "--sidebar-width": isSidebarOpen ? (isCollapsed ? "80px" : "288px") : "0px" } as React.CSSProperties}
+    >
       
       {/* MODERN LIGHT SIDEBAR WRAPPER */}
       <AnimatePresence mode="wait">

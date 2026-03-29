@@ -60,7 +60,8 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed }: Side
               alt="Logo"
               width={36}
               height={36}
-              style={{ height: 'auto' }}
+              priority
+              style={{ width: "36px", height: "auto" }}
               className="rounded-lg object-contain"
             />
           </motion.div>
@@ -78,7 +79,8 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed }: Side
                   alt="TestimonialHub"
                   width={130}
                   height={32}
-                  style={{ height: 'auto' }}
+                  priority
+                  style={{ width: "130px", height: "auto" }}
                   className="object-contain shrink-0"
                 />
               </motion.div>
@@ -114,7 +116,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed }: Side
         isCollapsed ? "px-2" : "px-4"
       )}>
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.href}

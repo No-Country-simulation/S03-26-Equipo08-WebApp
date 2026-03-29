@@ -61,8 +61,7 @@ export default function Sidebar({ setIsOpen, isCollapsed, setIsCollapsed }: Side
               width={36}
               height={36}
               priority
-              style={{ width: "36px", height: "auto" }}
-              className="rounded-lg object-contain"
+              className="object-contain shrink-0"
             />
           </motion.div>
           <AnimatePresence mode="wait">

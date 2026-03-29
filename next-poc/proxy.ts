@@ -3,9 +3,9 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
 export async function proxy(request: NextRequest) {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    })
+    // const session = await auth.api.getSession({
+    //     headers: await headers()
+    // })
 
     // THIS IS NOT SECURE!
     // This is the recommended approach to optimistically redirect users

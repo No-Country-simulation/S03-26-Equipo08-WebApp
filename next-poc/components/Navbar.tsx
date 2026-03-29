@@ -16,6 +16,7 @@ export default function Navbar() {
             alt="Testimonial Hub" 
             fill
             sizes="128px"
+            priority
             className="object-contain relative z-10 transition-all duration-500 group-hover:scale-105" 
           />
         </Link>

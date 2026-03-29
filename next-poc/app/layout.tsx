@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "The next-gen CMS for testimonials in Edtech. Built for trust and growth.",
 };
 
+import { Toaster } from "sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,6 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased selection:bg-primary/10 selection:text-primary">
           {children}
+          <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

@@ -1,0 +1,7 @@
+# Vite / Frontend specific ignore
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+.DS_Store

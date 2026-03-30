@@ -13,6 +13,7 @@ export const users = pgTable("user", {
 	emailVerified: boolean("emailVerified").notNull(),
 	image: text("image"),
 	role: roleEnum("role").default("editor").notNull(),
+	mustChangePassword: boolean("mustChangePassword").default(false).notNull(),
 	createdAt: timestamp("createdAt").notNull(),
 	updatedAt: timestamp("updatedAt").notNull(),
 });
@@ -58,15 +59,37 @@ export const verifications = pgTable("verification", {
 export const organizations = pgTable("organization", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(),
-	slug: text("slug").notNull().unique(), // e.g., "university-x", "dev-bootcamp"
-	ownerId: text("userId").notNull().references(() => users.id),
+	slug: text("slug").notNull().unique(),
+	logo: text("logo"),
+	metadata: text("metadata"), // JSON string for flexible data (plan, settings, etc.)
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+
+export const members = pgTable("member", {
+	id: text("id").primaryKey(),
+	organizationId: text("organizationId").notNull().references(() => organizations.id),
+	userId: text("userId").notNull().references(() => users.id),
+	role: text("role").notNull().default("member"), // owner | admin | member
+	teamId: text("teamId"),
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
+});
+
+export const invitations = pgTable("invitation", {
+	id: text("id").primaryKey(),
+	organizationId: text("organizationId").notNull().references(() => organizations.id),
+	email: text("email").notNull(),
+	role: text("role").notNull().default("member"),
+	status: text("invitationStatus").notNull().default("pending"), // pending | accepted | rejected | canceled
+	inviterId: text("inviterId").notNull().references(() => users.id),
+	expiresAt: timestamp("expiresAt").notNull(),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const categories = pgTable("category", {
 	id: uuid("id").defaultRandom().primaryKey(),
-	name: text("name").notNull(), // e.g., "Product Review", "Course Success", "Event Feedback"
+	name: text("name").notNull(),
 	organizationId: text("organizationId").notNull().references(() => organizations.id),
+	createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
 
 export const testimonials = pgTable("testimonial", {
@@ -76,42 +99,35 @@ export const testimonials = pgTable("testimonial", {
 	
 	// Visitor / Storyteller Data
 	visitorName: text("visitorName").notNull(),
-	visitorRole: text("visitorRole").notNull(),    // e.g., "Frontend Developer Student"
-	visitorCompany: text("visitorCompany"),       // e.g., "Google"
-	visitorImage: text("visitorImage"),           // Avatar URL
+	visitorRole: text("visitorRole").notNull(),
+	visitorCompany: text("visitorCompany"),
+	visitorImage: text("visitorImage"),
 	
 	// Content & Multimedia
 	content: text("content").notNull(),
-	mediaUrl: text("mediaUrl"),                   // Original link (YT, Cloudinary, etc.)
-	mediaType: text("mediaType"),                 // 'video' | 'image' | 'text'
+	mediaUrl: text("mediaUrl"),
+	mediaType: text("mediaType"), // 'video' | 'image' | 'text'
 	rating: integer("rating").default(5),
+	tags: text("tags"), // JSON string array: ["premium", "featured"]
 	
 	// Collection & Moderation
 	source: sourceEnum("source").default("manual").notNull(), 
 	status: statusEnum("status").default("pending").notNull(),
-	isFeatured: boolean("isFeatured").default(false), // SELECTED for wall/carousel
+	isFeatured: boolean("isFeatured").default(false),
 	
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 	updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 });
 
-// --- INVITATIONS & ACCESS CONTROL ---
-
-export const invitations = pgTable("invitation", {
-	id: text("id").primaryKey(),
-	email: text("email").notNull(),
-	role: roleEnum("role").default("editor").notNull(),
-	token: text("token").notNull().unique(), 
-	organizationId: text("organizationId").references(() => organizations.id),
-	invitedById: text("invitedById").notNull().references(() => users.id),
-	expiresAt: timestamp("expiresAt").notNull(),
-	createdAt: timestamp("createdAt").notNull().defaultNow(),
-});
+// --- ACCESS CONTROL (VISITOR TOKENS) ---
 
 export const visitorAccessTokens = pgTable("visitor_access_token", {
 	id: uuid("id").defaultRandom().primaryKey(),
 	organizationId: text("organizationId").notNull().references(() => organizations.id),
 	token: text("token").notNull().unique(),
+	visitorName: text("visitorName").notNull(),
+	visitorEmail: text("visitorEmail").notNull(),
+	used: boolean("used").default(false).notNull(),
 	expiresAt: timestamp("expiresAt").notNull(),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),
 });

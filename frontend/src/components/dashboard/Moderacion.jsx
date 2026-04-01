@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 
 export function Moderacion () {
-
 const [rating, setRating] = useState(0);
 const [hover, setHover] = useState(0);
 
@@ -14,7 +14,76 @@ const [hover, setHover] = useState(0);
     imagen: "https://randomuser.me/api/portraits/men/32.jpg",
 }
 
+const location = useLocation();
+const testimonios = location.state;
 
+const CardTestimonio = ({ data, rating, setRating, hover, setHover }) => (
+  <div className="bg-white rounded-xl shadow-md p-5 border max-w-2xl w-full">
+
+    {/* Header */}
+    <div className="flex items-center justify-between mb-3">
+      
+      <div className="flex items-center gap-4">
+        <img
+          src={data.imagen || "https://via.placeholder.com/40"}
+          alt="avatar"
+          className="w-12 h-12 rounded-full"
+        />
+
+        <div>
+          <h3 className="font-semibold text-gray-800">
+            {data.nombre || `${data.firstName} ${data.surname}`}
+          </h3>
+          <p className="text-sm text-gray-500">
+            {data.rol} en {data.empresa || data.organizacion}
+          </p>
+        </div>
+      </div>
+
+      {/* Rating */}
+      <div className="flex gap-1 text-xl">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span
+            key={star}
+            className={`cursor-pointer ${
+              (hover || rating) >= star
+                ? "text-yellow-400"
+                : "text-gray-300"
+            }`}
+            onClick={() => setRating(star)}
+            onMouseEnter={() => setHover(star)}
+            onMouseLeave={() => setHover(0)}
+          >
+            ⭐
+          </span>
+        ))}
+      </div>
+    </div>
+
+    {/* Mensaje */}
+    <p className="text-gray-600 text-sm leading-relaxed">
+      {data.mensaje || data.comentario}
+    </p>
+
+    {/* Rating texto */}
+    <p className="mt-3 text-xs text-gray-500">
+      {(data.rating || rating) > 0
+        ? `Calificación: ${data.rating || rating}/5`
+        : "Sin calificar"}
+    </p>
+
+    {/* Botones */}
+    <div className="flex gap-4 mt-6">
+      <button className="bg-green-500 text-white px-4 py-2 rounded-md w-full">
+        Aceptar
+      </button>
+
+      <button className="bg-red-500 text-white px-4 py-2 rounded-md w-full">
+        Rechazar
+      </button>
+    </div>
+  </div>
+);
     
 return (
         <>
@@ -43,67 +112,30 @@ return (
                             <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>0</h5>
                         </div>
             </div>
-<div style={{marginTop:'5%'}} className="bg-white rounded-xl shadow-md p-5 border max-w-2xl">
+<div className="flex flex-col items-center gap-6 mt-10">
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-3">
-        
-        <div className="flex items-center gap-4">
-          <img
-            src={testimonio.imagen}
-            alt="avatar"
-            className="w-12 h-12 rounded-full"
-          />
+  {/* Ejemplo */}
+  <CardTestimonio
+    data={testimonio}
+    rating={rating}
+    setRating={setRating}
+    hover={hover}
+    setHover={setHover}
+  />
 
-          <div>
-            <h3 className="font-semibold text-gray-800">
-              {testimonio.nombre}
-            </h3>
-            <p className="text-sm text-gray-500">
-              {testimonio.rol} en {testimonio.empresa}
-            </p>
-          </div>
-        </div>
+  {/* Preview del usuario */}
+  {testimonios && (
+    <CardTestimonio
+      data={testimonios}
+      rating={rating}
+      setRating={setRating}
+      hover={hover}
+      setHover={setHover}
+    />
+  )}
 
-        {/* ⭐ Rating */}
-        <div className="flex gap-1 text-xl">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={`cursor-pointer ${
-                (hover || rating) >= star
-                  ? "text-yellow-400"
-                  : "text-gray-300"
-              }`}
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHover(star)}
-              onMouseLeave={() => setHover(0)}
-            >
-              ⭐
-            </span>
-          ))}
-        </div>
-
-      </div>
-
-      {/* Mensaje */}
-      <p className="text-gray-600 text-sm leading-relaxed">
-        {testimonio.mensaje}
-      </p>
-
-      {/* Texto de rating */}
-      <p className="mt-3 text-xs text-gray-500">
-        {rating > 0 ? `Calificación: ${rating}/5` : "Sin calificar"}
-      </p>
-<div style={{display:'flex'}}>
-    <div className="mt-10">
-      <button style={{background:'green' , width:'18rem'}} type="submit" className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Aceptar</button>
-    </div>
-    <div className="mt-10">
-      <button style={{background:'red' , width:'18rem' , marginLeft:'19%'}} type="submit" className="block w-full rounded-md bg-indigo-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Rechazar</button>
-    </div>
-    </div>
 </div>
+
         </>
     )
 }

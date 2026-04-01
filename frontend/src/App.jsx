@@ -26,6 +26,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} /> {/* 2. Agrega la ruta */}
         <Route path="/dashboardAuth" element={<DashboardAuth />} />
         
+        <Route path='/crear' element={<NuevoTestimonio/>}></Route>
 
         <Route path="/home" element={<Header/>} />
 

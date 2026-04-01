@@ -8,7 +8,7 @@ export function NuevoTestimonio () {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const esAdmin = location.pathname.includes("dashboard")
+  const esAdmin = localStorage.getItem("role") === "admin"
   
   const [imagen, setImagen] = useState(null);
   const [video, setVideo] = useState(null);
@@ -44,10 +44,14 @@ export function NuevoTestimonio () {
   const [comentario , setComentario] = useState("")
   const [preview , setPreview] = useState(null)
 
+  const usuario = JSON.parse(localStorage.getItem("user"));
+
   const handleSubmit = (e) => {
     e.preventDefault()
 
     const nuevoTestimonio = {
+      id: Date.now(),
+      email: usuario?.email, //No es del form, es del sistema
       firstName,
       surname,
       rol,
@@ -64,16 +68,28 @@ export function NuevoTestimonio () {
       return;
     }
 
-    navigate("/dashboard/moderación" , {
-      state:nuevoTestimonio
-    });
+    if(!usuario) {
+      toast.error("Debes iniciar sesión");
+      navigate("/");
+      return;
+    }
 
+    const existente = JSON.parse(localStorage.getItem("testimonios")) || [];
+
+    existente.push(nuevoTestimonio)
+
+    localStorage.setItem("testimonios" , JSON.stringify(existente))
 
     Swal.fire({
-      title: "Testimonio Creado",
-      icon: "success",
-      draggable: true
-    });
+    title: "Testimonio Creado",
+    icon: "success",
+    }).then(() => {
+      if (esAdmin) {
+        navigate("/dashboard/moderacion");
+      } else {
+        navigate("/dashboard");
+      }
+  });
 
 }
 

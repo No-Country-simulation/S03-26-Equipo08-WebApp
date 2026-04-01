@@ -10,10 +10,33 @@ const AuthPage = () => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login intentado con:", formData);
-    navigate('/dashboard'); 
-  };
+    
+      e.preventDefault();
+
+      const { email } = formData;
+
+  // 🔹 Simulación de roles
+      let role = "user";
+
+      if (email === "admin@mail.com") {
+        role = "admin";
+      }
+
+  // 🔹 Guardar role
+  localStorage.setItem("role", role);
+
+  // 🔹 (opcional) guardar usuario
+  localStorage.setItem("user", JSON.stringify({ email, role }));
+
+  // 🔹 Verificar testimonios
+  const testimonios = JSON.parse(localStorage.getItem("testimonios")) || [];
+
+  if (testimonios.length === 0) {
+    navigate("/crear");
+  } else {
+    navigate("/dashboard");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white font-sans px-4">

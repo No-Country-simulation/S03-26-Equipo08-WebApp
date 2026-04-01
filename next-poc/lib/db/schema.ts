@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, boolean, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
 
 // --- ENUMS ---
-export const roleEnum = pgEnum("user_role", ["admin", "editor", "visitor"]);
+export const roleEnum = pgEnum("user_role", ["super_admin", "owner", "editor"]);
 export const statusEnum = pgEnum("testimonial_status", ["pending", "approved", "rejected", "archived"]);
 export const sourceEnum = pgEnum("testimonial_source", ["manual", "visitor_form", "youtube", "social"]);
 
@@ -12,7 +12,7 @@ export const users = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("emailVerified").notNull(),
 	image: text("image"),
-	role: roleEnum("role").default("editor").notNull(),
+	role: roleEnum("role").default("owner").notNull(),
 	mustChangePassword: boolean("mustChangePassword").default(false).notNull(),
 	createdAt: timestamp("createdAt").notNull(),
 	updatedAt: timestamp("updatedAt").notNull(),

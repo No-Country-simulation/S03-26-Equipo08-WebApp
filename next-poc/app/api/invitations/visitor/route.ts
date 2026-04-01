@@ -12,8 +12,8 @@ export async function POST(request: NextRequest) {
     // Verify the requester is an admin
     const session = await auth.api.getSession({ headers: await headers() });
     const userRole = (session?.user as { role?: string } | undefined)?.role;
-    if (!session || userRole !== "admin") {
-      return NextResponse.json({ error: "No autorizado. Solo admins pueden invitar visitantes." }, { status: 403 });
+    if (!session || userRole !== "owner") {
+      return NextResponse.json({ error: "No autorizado. Solo owners pueden invitar visitantes." }, { status: 403 });
     }
 
     const body = await request.json();
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     const userRole = (session?.user as { role?: string } | undefined)?.role;
-    if (!session || userRole !== "admin") {
+    if (!session || userRole !== "owner") {
       return NextResponse.json({ error: "No autorizado." }, { status: 403 });
     }
 

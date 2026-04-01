@@ -1,153 +1,103 @@
-# Contexto del Proyecto: Testimonial Hub (next-poc)
+# Contexto del Proyecto: Testimonial Hub (SaaS)
 
-Este documento contiene las especificaciones actualizadas sobre los roles, flujos de invitación, y arquitectura del sistema.
+Este documento contiene las especificaciones actualizadas sobre los roles, flujos de invitación, y arquitectura SaaS del sistema.
 
 ---
 
-## Definición de Roles
+## Definición de Roles (Modelo SaaS)
 
-### 1. Administrador (Admin / Soporte de la App)
+### 1. Super Admin (Soporte / Plataforma)
 
-Rol de mayor jerarquía. Es quien gestiona la plataforma completa.
+Rol reservado de mayor jerarquía para los creadores de Testimonial Hub.
 
-- **Registro:** Se registra como un usuario normal (email + contraseña) y luego un proceso interno le asigna el rol `admin`.
-- **Organización:** Automáticamente obtiene una organización por defecto al registrarse.
-- **Permisos:**
+- No está asociado a ninguna organización de cliente.
+- Gestionará (en el futuro) planes, billing, suspensiones o soporte global.
+- Creado inicialmente por script de base de datos o ruta de setup secreta.
+
+### 2. Owner (Cliente / Dueño de Organización)
+
+Es la empresa o particular que contrata / se registra en Testimonial Hub para recopilar sus testimonios.
+
+- **Registro:** Se registra libremente en `/register` (formulario público de SaaS).
+- **Organización:** Durante su registro, se crea automáticamente la Organización con el nombre de su empresa.
+- **Permisos dentro de su Organización:**
   - ✅ Aprueba o rechaza testimonios pendientes
   - ✅ Crea, edita y elimina testimonios
   - ✅ Crea y gestiona categorías
   - ✅ Invita Editores (con cuenta + contraseña temporal)
-  - ✅ Invita Visitantes (con link de formulario de un solo uso)
-  - ✅ Elimina editores o visitantes (por email equivocado, error, etc.)
-  - ✅ Acceso al script/código de integración (Embeds)
-  - ✅ Acceso completo al Dashboard
+  - ✅ Genera links de Visitantes
+  - ✅ Acceso total al dashboard y configuración de integración
+  - ❌ **NO puede** ver data de otras organizaciones
 
-### 2. Editor (Invitado por el Admin)
+### 3. Editor (Invitado por el Owner)
 
-Usuario que gestiona testimonios dentro de la organización. **NO se registra solo**, es invitado.
+Usuario que gestiona testimonios como empleado/colaborador del Owner. **NO se registra solo**.
 
 - **Flujo de Invitación:**
-  1. El Admin introduce **nombre + email** del editor
-  2. El sistema genera una **contraseña temporal** automáticamente
-  3. Se envía un **email automático** con las credenciales (email + contraseña temporal)
-  4. **Además**, se le muestra al Admin el **link de invitación** para compartir por otros canales (WhatsApp, Telegram, etc.)
-  5. Al hacer login por primera vez → se le **fuerza a cambiar la contraseña**
-  6. Desde ahí, usa email + nueva contraseña normalmente
+  1. El Owner introduce **nombre + email** del editor.
+  2. El sistema genera una **contraseña temporal**.
+  3. Se envía al editor el **link de login** (opcionalmente por email o WhatsApp).
+  4. Al hacer login por primera vez → se le **fuerza a cambiar la contraseña**.
 - **Permisos:**
-  - ✅ Crea, edita y sube testimonios
-  - ✅ Gestiona los testimonios que llegan del formulario del visitante
-  - ✅ Asigna **Tags** a los testimonios (el visitante no los pone)
-  - ✅ Acceso al script de integración (Embeds)
+  - ✅ Sube y edita testimonios
+  - ✅ Asigna **Tags**
   - ✅ Acceso al Dashboard (limitado a su organización)
-  - ❌ **NO puede** aprobar ni rechazar testimonios (eso es del Admin)
-  - ❌ **NO puede** eliminar otros editores ni visitantes
+  - ❌ **NO puede** aprobar ni rechazar testimonios
+  - ❌ **NO puede** invitar a otras personas ni ver facturación de la org
 
-### 3. Visitante (Invitado one-shot)
+### 4. Visitante (Invitado one-shot)
 
-Usuario final que envía un testimonio. **NO crea cuenta**, accede por un token temporal.
+Usuario final que envía un testimonio. **NO crea cuenta**, accede por un token temporal generado por el Owner/Editor.
 
-- **Flujo de Invitación:**
-  1. El Admin introduce **nombre + email** del visitante
-  2. Se envía un **email automático** con saludo personalizado y link con token
-  3. **Además**, se le muestra al Admin:
-     - **Link copiable** para compartir manualmente
-     - **Botón "Enviar por WhatsApp"** con mensaje pre-armado:
-       > _¡Hola {nombre}! 👋 Te invitamos a dejar tu testimonio en Testimonial Hub. Solo haz clic aquí: {link}_
-  4. El link lo lleva a un **formulario público** para dejar su testimonio
-  5. Al enviar el formulario → el **token se invalida inmediatamente**
-  6. Si no lo usa → el **token expira en 7 días**
-- **Permisos:**
-  - ✅ Accede al formulario de testimonio (vía token)
-  - ✅ Envía un testimonio (una sola vez)
-  - ❌ **NO tiene cuenta** en la plataforma
-  - ❌ **NO accede al Dashboard**
-  - ❌ **NO puede ver otros testimonios** (solo el formulario de envío)
+- **Flujo:**
+  1. Owner genera link para el visitante (por email o generando el enlace para WhatsApp).
+  2. Visitante abre el formulario, lo envía, y el **token se invalida inmediatamente**.
+  3. Expira en 7 días si no se usa.
+- **Permisos:** Solo enviar su propio testimonio 1 vez.
 
 ---
 
 ## Tabla de Roles en la Base de Datos
 
-| Concepto            | `user.role` (global) | `member.role` (en org) | ¿Tiene cuenta?                 |
-| ------------------- | -------------------- | ---------------------- | ------------------------------ |
-| **Admin/Soporte**   | `admin`              | `owner` de su org      | ✅ Sí                          |
-| **Editor invitado** | `editor`             | `member` de la org     | ✅ Sí (creada al ser invitado) |
-| **Visitante**       | N/A                  | N/A                    | ❌ No (acceso por token)       |
-
----
-
-## Formulario de Testimonio (Visitante)
-
-Campos que completa el visitante al acceder por el link:
-
-| Campo                  | Obligatorio | Notas                                     |
-| ---------------------- | ----------- | ----------------------------------------- |
-| Nombre y Apellido      | ✅          | Pre-rellenado del email de invitación     |
-| Cargo / Rol            | ✅          | Ej: "CEO", "Estudiante"                   |
-| Empresa / Organización | ✅          |                                           |
-| Contenido              | ✅          | Texto del testimonio (límite por definir) |
-| Multimedia             | ❌          | URL de imagen o video                     |
-| Calificación           | ❌          | Rating por estrellas (1-5)                |
-
-> **Nota:** Los **Tags** los asigna el Editor, nunca el visitante.
+| Rol en `user.role` | Rol en org (`member.role`) | Descripción / ¿Quién es? | ¿Tiene cuenta?                   |
+| ------------------ | -------------------------- | ------------------------ | -------------------------------- |
+| **`super_admin`**  | N/A                        | Dueños de la plataforma  | ✅ Sí (vía script interno)       |
+| **`owner`**        | `owner`                    | El Cliente del SaaS      | ✅ Sí (se registra él mismo)     |
+| **`editor`**       | `member`                   | Colaborador del cliente  | ✅ Sí (cuenta creada al invitar) |
+| **(Visitante)**    | N/A                        | Deja el testimonio       | ❌ No (acceso por token DB)      |
 
 ---
 
 ## Flujos Técnicos
 
-### Registro del Admin
+### Registro del Cliente SaaS (Owner)
 
-1. Se registra con el form público (nombre, email, contraseña)
-2. Se crea como `user.role = "editor"` por defecto
-3. Un proceso interno (seed, script o panel) le cambia el rol a `admin`
-4. Se le crea una organización por defecto
+1. Cliente llena formulario: Nombre, Email, Contraseña, **Nombre de Empresa**.
+2. Llamada a `/api/register`.
+3. Backend: Crea `user` con `role = "owner"`.
+4. Backend: Limpia nombre de empresa y crea `organization` (ej. "Mi Empresa" → "mi-empresa").
+5. Backend: Inserta `member` vinculando al User con la Organización con rol `owner`.
+6. Cliente es redirigido a su Dashboard listo para operar.
 
 ### Invitación de Editor
 
-1. Admin llena formulario: nombre + email
-2. Backend: crea `user` con `role = "editor"` + contraseña temporal + `mustChangePassword = true`
-3. Backend: crea `member` en la organización con `role = "member"`
-4. Backend: envía email con credenciales
-5. Backend: devuelve al Admin el **link de invitación** para compartir por WhatsApp u otro canal
-6. Editor hace login → detectamos `mustChangePassword = true` → redirigir a cambio de contraseña
-7. Tras cambiar contraseña → acceso normal al Dashboard
+1. Owner llena: nombre + email.
+2. Backend: Crea `user` como `editor` + password temporal + `mustChangePassword = true`.
+3. Backend: Crea `member` con `role = "member"` en la organización actual.
+4. Devuelve link y password temporal para mandar por WhatsApp o mail.
 
 ### Invitación de Visitante
 
-1. Admin llena formulario: nombre + email
-2. Backend: crea registro en `visitor_access_token` con token + expiración (7 días)
-3. Backend: envía email con link `{APP_URL}/testimonial/new?token={TOKEN}`
-4. Backend: devuelve al Admin el **link + mensaje pre-armado para WhatsApp**
-5. Visitante abre el link (desde email, WhatsApp, o donde lo reciba) → validamos token
-6. Visitante llena el formulario → al enviar, invalidamos el token
-7. Fin. No tiene más acceso.
-
-> **Nota:** La seguridad está en el **token**, no en el canal de envío. Email, WhatsApp, Telegram, SMS — todos son válidos.
-
-### Eliminación de Invitados
-
-- Admin puede eliminar un editor: se elimina el `member`, opcionalmente el `user`
-- Admin puede cancelar una invitación de visitante: se invalida el `visitor_access_token`
+1. Owner genera token. Backend inserta en `visitor_access_token`.
+2. Devuelve link `{APP_URL}/testimonial/new?token={TOKEN}` y botón a WhatsApp.
+3. Se llena el formulario → Token pasa a `used: true`.
 
 ---
 
-## Stack Técnico
+## Stack Técnico Base
 
-| Componente        | Tecnología                                 |
-| ----------------- | ------------------------------------------ |
-| Framework         | Next.js 16                                 |
-| Auth              | Better Auth v1.x + plugin Organization     |
-| DB                | PostgreSQL + Drizzle ORM                   |
-| Email             | Nodemailer (SMTP Gmail)                    |
-| UI                | Tailwind CSS 4 + Shadcn UI + Framer Motion |
-| Validación        | Zod                                        |
-| Documentación API | swagger-ui-react                           |
-
----
-
-## Notas Importantes
-
-- Los testimonios se crean con status `pending` por defecto
-- Solo el Admin puede cambiar el status a `approved` o `rejected`
-- El Editor puede crear testimonios pero quedan en `pending` hasta que el Admin los apruebe
-- Cada organización tiene sus propias categorías, testimonios e invitaciones
-- El sistema soporta multi-tenancy a nivel de organización
+- **Framework:** Next.js 16 (App Router)
+- **Auth:** Better Auth v1.x + Plugin Organizations
+- **DB:** PostgreSQL + Drizzle ORM
+- **UI:** Tailwind CSS 4 + Shadcn UI + Framer Motion
+- **Documentación API:** OpenAPI + Swagger (`swagger-ui-react`)

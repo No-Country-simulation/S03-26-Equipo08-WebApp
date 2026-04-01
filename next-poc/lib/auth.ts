@@ -24,8 +24,9 @@ export const auth = betterAuth({
         nextCookies(),
         organization({
             allowUserToCreateOrganization: async (user) => {
-                // Solo admins pueden crear organizaciones
-                return user.role === "admin";
+                // Owners y super_admins pueden crear organizaciones
+                const role = (user as { role?: string }).role;
+                return role === "owner" || role === "super_admin";
             },
             organizationLimit: 5,
             membershipLimit: 100,

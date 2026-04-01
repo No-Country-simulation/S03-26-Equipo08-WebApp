@@ -370,7 +370,7 @@ const swaggerSpec = {
                         id: { type: "string" },
                         name: { type: "string" },
                         email: { type: "string" },
-                        role: { type: "string", enum: ["admin", "editor"] },
+                        role: { type: "string", enum: ["super_admin", "owner", "editor"] },
                         mustChangePassword: { type: "boolean" },
                       },
                     },
@@ -425,6 +425,36 @@ const swaggerSpec = {
         responses: {
           "200": { description: "Lista de organizaciones" },
           "401": { description: "No autenticado" },
+        },
+      },
+    },
+    "/api/register": {
+      post: {
+        tags: ["Auth"],
+        summary: "Registro de Owner (SaaS)",
+        description: "Registra un nuevo cliente (Owner) en la plataforma. Crea automáticamente su usuario, genera una Organización base con el nombre de la empresa y le asigna privilegios de propietario. Maneja la sesión automáticamente vía Better Auth.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "email", "password", "companyName"],
+                properties: {
+                  name: { type: "string", example: "Laura Martínez" },
+                  email: { type: "string", example: "laura@techstart.com" },
+                  password: { type: "string", example: "MiClaveSegura123" },
+                  companyName: { type: "string", example: "TechStart Solutions" },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          "201": { description: "Registro exitoso. Devuelve userId, organizationId y slug generado." },
+          "400": { description: "Faltan campos requeridos o contraseña débil." },
+          "409": { description: "Ya existe una cuenta con ese email." },
+          "500": { description: "Error interno gestionando la creación en Better Auth o DB." },
         },
       },
     },

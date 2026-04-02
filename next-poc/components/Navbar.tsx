@@ -23,7 +23,7 @@ export default function Navbar() {
  
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
-          <Link href="#docs" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors relative group">
+          <Link href="/docs" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors relative group">
             Documentación
             <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all rounded-full" />
           </Link>

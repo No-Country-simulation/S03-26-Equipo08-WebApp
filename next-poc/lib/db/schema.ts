@@ -27,6 +27,8 @@ export const sessions = pgTable("session", {
 	ipAddress: text("ipAddress"),
 	userAgent: text("userAgent"),
 	userId: text("userId").notNull().references(() => users.id),
+	activeOrganizationId: text("activeOrganizationId"),
+	activeTeamId: text("activeTeamId"),
 });
 
 export const accounts = pgTable("account", {
@@ -126,7 +128,7 @@ export const visitorAccessTokens = pgTable("visitor_access_token", {
 	organizationId: text("organizationId").notNull().references(() => organizations.id),
 	token: text("token").notNull().unique(),
 	visitorName: text("visitorName").notNull(),
-	visitorEmail: text("visitorEmail").notNull(),
+	visitorEmail: text("visitorEmail"),
 	used: boolean("used").default(false).notNull(),
 	expiresAt: timestamp("expiresAt").notNull(),
 	createdAt: timestamp("createdAt").notNull().defaultNow(),

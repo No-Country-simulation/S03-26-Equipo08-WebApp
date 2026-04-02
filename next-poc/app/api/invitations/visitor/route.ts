@@ -1,99 +1,67 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { visitorAccessTokens } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
-import { eq, desc } from "drizzle-orm";
-import { randomUUID } from "crypto";
+import { db } from "@/lib/db";
+import { sendInvitationEmail } from "@/lib/mail";
+import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 
-// POST /api/invitations/visitor — Generate a visitor link (no email sent)
-export async function POST(request: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // Verify the requester is an admin
-    const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as { role?: string } | undefined)?.role;
-    if (!session || userRole !== "owner") {
-      return NextResponse.json({ error: "No autorizado. Solo owners pueden invitar visitantes." }, { status: 403 });
+    const { visitorName, visitorEmail, organizationId, sendEmail: emailEnabled } = await req.json();
+    const session = await auth.api.getSession({
+      headers: await headers()
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { visitorName, visitorEmail, organizationId } = body;
+    // 1. Obtener datos de la organización
+    const org = await db.query.organizations.findFirst({
+        where: (orgs, { eq }) => eq(orgs.id, organizationId)
+    });
 
-    if (!visitorName || !visitorEmail || !organizationId) {
-      return NextResponse.json(
-        { error: "Faltan campos requeridos: visitorName, visitorEmail, organizationId" },
-        { status: 400 }
-      );
+    if (!org) {
+        return NextResponse.json({ error: "Organización no encontrada" }, { status: 404 });
     }
 
-    // Generate unique token
-    const token = randomUUID();
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    // 2. Generar el link público de recolección de testimonios
+    // El slug de la organización es clave para tener un link elegante
+    const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/v/${org.slug}?name=${encodeURIComponent(visitorName)}`;
 
-    // Store token in DB
-    const [created] = await db.insert(visitorAccessTokens).values({
-      organizationId,
-      token,
-      visitorName,
-      visitorEmail,
-      used: false,
-      expiresAt,
-    }).returning();
-
-    // Build the testimonial form link
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const formLink = `${appUrl}/testimonial/new?token=${token}`;
-
-    // Build WhatsApp message
-    const whatsappMessage = encodeURIComponent(
-      `¡Hola ${visitorName}! 👋\n\n` +
-      `Te invitamos a dejar tu testimonio en Testimonial Hub. ` +
-      `Es rápido y sencillo, solo haz clic aquí:\n\n` +
-      `${formLink}\n\n` +
-      `¡Gracias por compartir tu experiencia! ⭐`
-    );
-
-    return NextResponse.json({
-      data: {
-        tokenId: created.id,
-        visitorName,
-        visitorEmail,
-        formLink,
-        whatsappUrl: `https://wa.me/?text=${whatsappMessage}`,
-        expiresAt: expiresAt.toISOString(),
-        message: `Link generado para "${visitorName}". Compártelo por el canal que prefieras.`,
-      },
-    }, { status: 201 });
-
-  } catch (error) {
-    console.error("❌ Error creating visitor invitation:", error);
-    return NextResponse.json({ error: "Error al crear invitación de visitante." }, { status: 500 });
-  }
-}
-
-// GET /api/invitations/visitor — List all visitor tokens for an organization
-export async function GET(request: NextRequest) {
-  try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    const userRole = (session?.user as { role?: string } | undefined)?.role;
-    if (!session || userRole !== "owner") {
-      return NextResponse.json({ error: "No autorizado." }, { status: 403 });
+    // 3. Si se proporcionó email y la opción está activa, mandar invitación formal
+    if (visitorEmail && emailEnabled) {
+      const serverAuth = auth as unknown;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (serverAuth as any).api.organization.inviteMember({
+        body: {
+          email: visitorEmail,
+          role: "member", // Podríamos definir un rol específico 'storyteller'
+          organizationId,
+        },
+        headers: await headers()
+      });
+      
+      // Enviamos el email usando nuestro sistema personalizado
+      await sendInvitationEmail({
+          to: visitorEmail,
+          organizationName: org.name,
+          inviterName: session.user.name,
+          role: 'member',
+          inviteUrl: inviteLink
+      });
     }
 
-    const { searchParams } = new URL(request.url);
-    const organizationId = searchParams.get("organizationId");
+    return NextResponse.json({ 
+        success: true, 
+        data: {
+          inviteLink,
+          visitorName,
+          emailSent: !!(visitorEmail && emailEnabled)
+        }
+    });
 
-    if (!organizationId) {
-      return NextResponse.json({ error: "organizationId es requerido." }, { status: 400 });
-    }
-
-    const tokens = await db.select().from(visitorAccessTokens)
-      .where(eq(visitorAccessTokens.organizationId, organizationId))
-      .orderBy(desc(visitorAccessTokens.createdAt));
-
-    return NextResponse.json({ data: tokens });
-  } catch (error) {
-    console.error("❌ Error fetching visitor tokens:", error);
-    return NextResponse.json({ error: "Error al listar invitaciones." }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("Error en invitación de visitante:", error);
+    return NextResponse.json({ error: "Error al generar link de testimonio" }, { status: 500 });
   }
 }

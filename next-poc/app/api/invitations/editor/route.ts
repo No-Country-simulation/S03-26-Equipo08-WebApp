@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { users, members } from "@/lib/db/schema";
+import { users, members, organizations } from "@/lib/db/schema";
 import { auth } from "@/lib/auth";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { headers } from "next/headers";
+import { sendEditorWelcomeEmail } from "@/lib/mail";
 
 // POST /api/invitations/editor — Invite a new editor
 export async function POST(request: NextRequest) {
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, organizationId } = body;
+    const { name, email, organizationId, sendNotification } = body;
 
     if (!name || !email || !organizationId) {
       return NextResponse.json(
@@ -25,6 +26,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Fetch organization name
+    const [organization] = await db.select().from(organizations).where(eq(organizations.id, organizationId)).limit(1);
+    const orgName = organization?.name || "Testimonial Hub";
 
     // Check if email is already registered
     const [existingUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
@@ -79,6 +84,17 @@ export async function POST(request: NextRequest) {
       `Ingresa aquí para comenzar: ${loginLink}\n\n` +
       `⚠️ Recuerda cambiar tu contraseña al ingresar por primera vez.`
     );
+
+    // Send email if requested
+    if (sendNotification) {
+      await sendEditorWelcomeEmail({
+        to: email,
+        name,
+        tempPassword,
+        loginLink,
+        organizationName: orgName,
+      });
+    }
 
     return NextResponse.json({
       data: {

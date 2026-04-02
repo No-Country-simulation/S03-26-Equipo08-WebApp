@@ -5,6 +5,7 @@ import { organization } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { sendInvitationEmail } from "./mail";
+import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -48,5 +49,40 @@ export const auth = betterAuth({
 
     emailAndPassword: {
         enabled: true,
+    },
+
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                required: false,
+                defaultValue: "owner",
+            },
+            mustChangePassword: {
+                type: "boolean",
+                required: false,
+                defaultValue: false,
+            },
+        },
+    },
+
+    databaseHooks: {
+        session: {
+            create: {
+                before: async (session) => {
+                    // Al crear sesión, buscamos la primera organización del usuario para activarla
+                    const firstMember = await db.query.members.findFirst({
+                        where: eq(schema.members.userId, session.userId)
+                    });
+
+                    return {
+                        data: {
+                            ...session,
+                            activeOrganizationId: firstMember?.organizationId,
+                        },
+                    };
+                },
+            },
+        },
     },
 });

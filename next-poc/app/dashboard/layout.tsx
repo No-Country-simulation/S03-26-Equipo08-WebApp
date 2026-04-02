@@ -3,15 +3,42 @@
 import { useState } from "react";
 import Sidebar from "./_components/Sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Key, Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+interface ExtendedUser {
+  mustChangePassword?: boolean;
+}
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  
+  const mustChangePassword = (session?.user as ExtendedUser)?.mustChangePassword;
+  
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // The auto-selection is now handled in a more stable way or is managed by the pages/sessions
+  
+  if (isSessionPending) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-[#f9fafb]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <p className="text-sm font-medium text-gray-500 animate-pulse">Cargando tu panel...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no session after loading, better auth will usually handle redirect if protected, 
+  // but we can add a check if needed.
 
   return (
     <div 
@@ -59,6 +86,31 @@ export default function DashboardLayout({
 
         <div className="flex-1 overflow-y-auto scroll-smooth relative">
           <div className="max-w-[1400px] mx-auto px-6 py-8 md:px-10 md:py-10 transition-all duration-300">
+            {mustChangePassword && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 p-6 bg-amber-50 border border-amber-100 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm shadow-amber-500/5 transition-all"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center shrink-0">
+                     <Key className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-bold text-amber-900">Actualiza tu contraseña</h3>
+                    <p className="text-sm text-amber-700 max-w-lg">Estás usando una contraseña temporal. Por seguridad de tus datos, te recomendamos cambiarla ahora mismo.</p>
+                  </div>
+                </div>
+                <div className="flex gap-3 shrink-0">
+                  <Button asChild className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl px-6 py-5">
+                    <Link href="/dashboard/configuracion" className="flex items-center gap-2">
+                       Cambiar ahora <Key className="w-4 h-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+           
             {children}
           </div>
         </div>

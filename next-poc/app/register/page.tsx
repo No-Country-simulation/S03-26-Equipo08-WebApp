@@ -5,9 +5,7 @@ import Link from "next/link";
 import { User, Mail, Lock, ArrowRight, ChevronLeft, ShieldCheck, Loader2, AlertCircle } from "lucide-react";
 import { motion, Variants } from "framer-motion";
 import Image from "next/image";
-import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { registerSchema } from "@/lib/validation";
 import { toast } from "sonner";
 
 
@@ -39,6 +37,7 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
+    companyName: "",
   });
   
   // UI State
@@ -49,7 +48,6 @@ export default function RegisterPage() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Limpiar error del campo mientras se escribe
     if (formErrors[field]) {
       setFormErrors(prev => {
         const next = { ...prev };
@@ -65,44 +63,35 @@ export default function RegisterPage() {
     setFormErrors({});
     setGeneralError(null);
 
-    // 1. Validación de Frontend con Zod
-    const validation = registerSchema.safeParse(formData);
-    
-    if (!validation.success) {
-      const errors: Record<string, string> = {};
-      const firstMessage = validation.error.issues[0].message;
-      toast.error(firstMessage); // Mostrar el primer error como toast
-      
-      validation.error.issues.forEach(issue => {
-        const path = issue.path[0] as string;
-        if (!errors[path]) errors[path] = issue.message;
-      });
-      setFormErrors(errors);
+    // Basic Validation
+    if (!formData.name || !formData.email || !formData.password || !formData.companyName) {
+      toast.error("Por favor completa todos los campos.");
       setIsLoading(false);
       return;
     }
 
-    // 2. Llamada a Better Auth
-    await authClient.signUp.email({
-      email: formData.email,
-      password: formData.password,
-      name: formData.name,
-      callbackURL: "/",
-    }, {
-      onRequest: () => setIsLoading(true),
-      onResponse: () => setIsLoading(false),
-      onError: (ctx) => {
-        setIsLoading(false);
-        const errorMessage = ctx.error.message || "Error al crear la cuenta.";
-        setGeneralError(errorMessage);
-        toast.error(errorMessage);
-      },
-      onSuccess: () => {
-        setIsLoading(false);
-        toast.success("¡Cuenta creada con éxito! Por favor inicia sesión.");
-        router.push("/login?registered=true");
+    try {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Error al crear la cuenta");
       }
-    });
+
+      toast.success("¡Cuenta y organización creadas con éxito!");
+      router.push("/login?registered=true");
+    } catch (err: unknown) {
+      const error = err as Error;
+      setGeneralError(error.message);
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -180,6 +169,22 @@ export default function RegisterPage() {
                  />
               </div>
               {formErrors.name && <p className="text-[10px] text-red-500 font-bold ml-1 uppercase tracking-wider">{formErrors.name}</p>}
+            </div>
+
+            {/* Input Company Name */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Nombre de la Empresa</label>
+              <div className="relative group">
+                 <ShieldCheck className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${formErrors.companyName ? 'text-red-400' : 'text-gray-300 group-focus-within:text-[#6366f1]'} transition-colors`} />
+                 <input 
+                   type="text" 
+                   value={formData.companyName}
+                   onChange={(e) => handleInputChange("companyName", e.target.value)}
+                   placeholder="Ej. Mi Agencia S.A." 
+                   className={`w-full pl-12 pr-4 py-4 bg-gray-50 border ${formErrors.companyName ? 'border-red-200 focus:ring-red-50 focus:border-red-200' : 'border-transparent focus:ring-indigo-50 focus:border-indigo-100'} rounded-2xl outline-none focus:bg-white transition-all font-semibold text-sm text-gray-900 placeholder:text-gray-300 shadow-sm`}
+                 />
+              </div>
+              {formErrors.companyName && <p className="text-[10px] text-red-500 font-bold ml-1 uppercase tracking-wider">{formErrors.companyName}</p>}
             </div>
 
             {/* Input Email */}

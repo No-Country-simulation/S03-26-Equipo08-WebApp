@@ -29,7 +29,7 @@ const DrawerList = (
                 <li style={{marginTop:'12%'}}><TextsmsIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="testimonios">Testimonios</NavLink></li>
                 <li style={{marginTop:'12%'}}><DownloadDoneIcon/><NavLink style={{marginLeft:'3%' , fontWeight:'bold'}} to='moderación'>Moderación</NavLink></li>
                 <li style={{marginTop:'12%'}}><CategoryIcon/><a style={{marginLeft:'3%', fontWeight:'bold'}} href="">Categorias</a></li>
-                <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><a style={{marginLeft:'3%', fontWeight:'bold'}} href="">Embeds</a></li>
+                <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to='embeds'>Embeds</NavLink></li>
             </ul>
         </nav>
     </List>

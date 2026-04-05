@@ -145,25 +145,104 @@ export default function IntegrationPage() {
              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Vista Previa</h2>
           </div>
           
-          <div className="flex-1 min-h-[400px] bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 p-12 flex items-center justify-center relative">
-             <motion.div 
-               layout
-               className="w-full max-w-sm bg-white p-8 rounded-2xl border border-gray-50 shadow-xl flex flex-col gap-6"
-             >
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center font-bold text-blue-600 text-lg border-2 border-white shadow-sm">MG</div>
-                   <div className="space-y-0.5">
-                      <h4 className="text-base font-bold text-gray-900 leading-none">María González</h4>
-                      <p className="text-xs font-semibold text-gray-400 tracking-tight uppercase">CEO // TechStart Solutions</p>
-                   </div>
-                </div>
-                <div className="flex gap-1">
-                   {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
-                </div>
-                <p className="text-gray-500 text-sm leading-relaxed italic font-medium">
-                   &quot;Este producto transformó nuestra gestión de prueba social. La eficiencia aumentó un 300% desde que lo integramos.&quot;
-                </p>
-             </motion.div>
+          <div className="flex-1 min-h-[400px] bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 p-8 flex items-center justify-center relative overflow-hidden">
+             <AnimatePresence mode="wait">
+               {selectedStyle === 'Tarjeta Moderna Silk' && (
+                 <motion.div 
+                   key="silk"
+                   initial={{ opacity: 0, x: 20 }}
+                   animate={{ opacity: 1, x: 0 }}
+                   exit={{ opacity: 0, x: -20 }}
+                   className="w-full max-w-sm bg-white p-8 rounded-3xl border border-gray-50 shadow-xl flex flex-col gap-6 transition-all hover:shadow-2xl"
+                 >
+                    <div className="flex items-center gap-4">
+                       <div className="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center font-bold text-white text-xl border-4 border-blue-50 shadow-sm">MG</div>
+                       <div className="space-y-0.5">
+                          <h4 className="text-base font-bold text-gray-900 leading-none">María González</h4>
+                          <p className="text-[10px] font-bold text-blue-600 tracking-wider uppercase">CEO // TechStart</p>
+                       </div>
+                    </div>
+                    <div className="flex gap-1">
+                       {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                    </div>
+                    <p className="text-gray-600 text-sm leading-relaxed italic font-medium">
+                       &quot;Este producto transformó nuestra gestión de prueba social. La eficiencia aumentó un 300% desde que lo integramos.&quot;
+                    </p>
+                 </motion.div>
+               )}
+
+               {selectedStyle === 'Grid de Alta Densidad' && (
+                 <motion.div 
+                    key="grid"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.1 }}
+                    className="grid grid-cols-2 gap-4 w-full"
+                 >
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm space-y-3">
+                         <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold">U{i}</div>
+                            <div className="flex gap-0.5">
+                               {[...Array(5)].map((_, j) => <Star key={j} className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />)}
+                            </div>
+                         </div>
+                         <p className="text-[10px] text-gray-500 line-clamp-2">Excelente herramienta, muy recomendada.</p>
+                      </div>
+                    ))}
+                 </motion.div>
+               )}
+
+               {selectedStyle === 'Muro de Confianza (Masonry)' && (
+                 <motion.div 
+                    key="masonry"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="flex flex-col gap-4 w-full max-w-md"
+                 >
+                    <div className="bg-blue-600 p-6 rounded-2xl text-white shadow-lg space-y-4">
+                       <p className="text-sm italic font-medium">&quot;Simplemente increíble. No puedo imaginarme trabajando sin esto ahora.&quot;</p>
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-white/20" />
+                          <div>
+                             <p className="text-xs font-bold">Roberto Sánchez</p>
+                             <p className="text-[10px] opacity-70">Fundador @ EcoSolutions</p>
+                          </div>
+                       </div>
+                    </div>
+                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-md space-y-4">
+                       <p className="text-sm text-gray-600 italic">&quot;La mejor inversión que hemos hecho este año.&quot;</p>
+                       <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-100" />
+                          <p className="text-xs font-bold text-gray-900">Ana Rodríguez</p>
+                       </div>
+                    </div>
+                 </motion.div>
+               )}
+
+               {selectedStyle === 'Carousel Dinámico' && (
+                 <motion.div 
+                    key="carousel"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex items-center gap-4 w-full"
+                 >
+                    <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 cursor-pointer">&lt;</div>
+                    <div className="flex-1 bg-white p-8 rounded-3xl border border-gray-50 shadow-xl text-center space-y-4">
+                       <div className="w-16 h-16 rounded-full bg-blue-50 mx-auto" />
+                       <div className="space-y-1">
+                          <h4 className="font-bold">Laura Fernández</h4>
+                          <div className="flex justify-center gap-1">
+                             {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                          </div>
+                       </div>
+                       <p className="text-gray-500 text-sm italic">&quot;La integración fue pan comido. ¡Excelente soporte!&quot;</p>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 cursor-pointer">&gt;</div>
+                 </motion.div>
+               )}
+             </AnimatePresence>
           </div>
         </section>
       </div>

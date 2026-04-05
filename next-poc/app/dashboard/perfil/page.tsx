@@ -16,12 +16,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function PerfilPage() {
   const { data: session } = authClient.useSession();
   const { data: userOrgs, isPending: isOrgsPending } = authClient.useListOrganizations();
   const { data: activeOrg } = authClient.useActiveOrganization();
   const { data: activeMember } = authClient.useActiveMember();
+  const router = useRouter();
 
   const user = session?.user;
 
@@ -141,10 +143,16 @@ export default function PerfilPage() {
                      return (
                         <motion.div 
                           key={org.id}
-                          whileHover={{ scale: 1.01 }}
+                          whileHover={myRole === "owner" ? { scale: 1.01, translateY: -2 } : { scale: 1.01 }}
+                          onClick={() => {
+                            if (myRole === "owner") {
+                              router.push("/dashboard/organizacion");
+                            }
+                          }}
                           className={cn(
                             "group p-6 bg-white border border-gray-100 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-blue-100/20 transition-all flex items-center justify-between relative overflow-hidden",
-                            isActive && "ring-2 ring-blue-600 ring-offset-2 border-transparent"
+                            isActive && "ring-2 ring-blue-600 ring-offset-2 border-transparent",
+                            myRole === "owner" && "cursor-pointer"
                           )}
                         >
                            {isActive && (

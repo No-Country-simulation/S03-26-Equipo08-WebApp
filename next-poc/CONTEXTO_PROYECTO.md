@@ -101,3 +101,5 @@ Usuario final que envía un testimonio. **NO crea cuenta**, accede por un token 
 - **DB:** PostgreSQL + Drizzle ORM
 - **UI:** Tailwind CSS 4 + Shadcn UI + Framer Motion
 - **Documentación API:** OpenAPI + Swagger (`swagger-ui-react`)
+
+---

@@ -205,11 +205,11 @@ export default function ModerationPage() {
                 {t.status === 'pending' && (
                   <div className="flex items-center gap-4">
                     <button className="flex-1 px-4 py-2.5 bg-white border border-gray-100 text-gray-900 rounded-xl font-bold text-xs hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all shadow-sm flex items-center justify-center gap-2 group">
-                      <X className="w-4 h-4 group-hover:scale-110" />
+                      <X className="w-4 h-4" />
                       Rechazar
                     </button>
                     <button className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-md flex items-center justify-center gap-2 group">
-                      <Check className="w-4 h-4 group-hover:scale-110" />
+                      <Check className="w-4 h-4" />
                       Aprobar
                     </button>
                   </div>

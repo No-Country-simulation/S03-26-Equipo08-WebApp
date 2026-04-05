@@ -124,33 +124,34 @@ export default function TestimoniosPage() {
 
   return (
     <div className="space-y-8 pb-20">
-      {/* Header */}
+      {/* Header and Quick Filters */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Testimonios</h1>
-          <p className="text-gray-500 font-medium">Gestiona todos los testimonios de tus clientes</p>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Mis Testimonios</h1>
+          <p className="text-gray-500 font-medium">Gestiona y visualiza todos tus testimonios recibidos</p>
         </div>
-        <Link href="/dashboard/ver-testimonios/nuevo" className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md hover:bg-blue-700 transition-all active:scale-95">
+        <Link href="/dashboard/ver-testimonios/nuevo" className="saas-button-primary flex items-center gap-2 w-fit">
           <Plus className="w-5 h-5" />
           Nuevo Testimonio
         </Link>
       </div>
 
-      {/* Controls Bar */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-        <div className="lg:col-span-6 relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+      {/* Filter Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div className="md:col-span-2 relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-600 transition-colors" />
           <input 
             type="text" 
             placeholder="Buscar por nombre, empresa o contenido..." 
-            className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 transition-all outline-none"
+            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm focus:ring-2 focus:ring-blue-100 transition-all outline-none shadow-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="lg:col-span-3">
+        
+        <div className="relative">
           <select 
-            className="w-full px-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-sm outline-none focus:bg-white"
+            className="w-full px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm outline-none cursor-pointer focus:ring-2 focus:ring-blue-100 shadow-sm appearance-none font-semibold text-gray-600"
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
@@ -161,9 +162,10 @@ export default function TestimoniosPage() {
             <option>Industria</option>
           </select>
         </div>
-        <div className="lg:col-span-3">
+
+        <div className="relative">
           <select 
-            className="w-full px-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-sm outline-none focus:bg-white"
+            className="w-full px-4 py-3 bg-white border border-gray-100 rounded-2xl text-sm outline-none cursor-pointer focus:ring-2 focus:ring-blue-100 shadow-sm appearance-none font-semibold text-gray-600"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
           >
@@ -212,7 +214,7 @@ export default function TestimoniosPage() {
 
               {/* Card Content Text */}
                <p className="text-sm font-medium text-gray-500 leading-relaxed line-clamp-3 italic">
-                &quot;{t.content}&quot;
+                &quot; {t.content} &quot;
               </p>
 
               {/* Badges Bar */}
@@ -269,22 +271,27 @@ export default function TestimoniosPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setPreviewTestimonial(null)}
-              className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+              className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
             />
             <motion.div 
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden"
+               initial={{ opacity: 0, scale: 0.95, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.95, y: 20 }}
+               className="relative bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl overflow-hidden z-10"
             >
               {/* Modal Header */}
-              <div className="p-8 pb-4 flex items-center justify-between border-b border-gray-50">
-                 <div className="space-y-1">
-                    <h2 className="text-xl font-bold text-gray-900">Vista Previa del Testimonio</h2>
-                    <p className="text-xs font-medium text-gray-400">Revisa los detalles del testimonio antes de publicarlo.</p>
+              <div className="p-8 border-b border-gray-50 flex items-center justify-between">
+                 <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                       <Eye className="w-5 h-5" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">Vista Previa</h2>
                  </div>
-                 <button onClick={() => setPreviewTestimonial(null)} className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-400">
-                    <X className="w-6 h-6" />
+                 <button 
+                   onClick={() => setPreviewTestimonial(null)}
+                   className="p-2 hover:bg-gray-50 rounded-xl transition-all"
+                 >
+                    <X className="w-5 h-5 text-gray-400" />
                  </button>
               </div>
 
@@ -305,8 +312,8 @@ export default function TestimoniosPage() {
                     </div>
                  </div>
 
-                 <p className="text-lg font-medium text-gray-500 leading-relaxed italic">
-                    &quot;{previewTestimonial.content}&quot;
+                 <p className="text-xl font-medium text-gray-600 leading-relaxed italic">
+                    &quot; {previewTestimonial.content} &quot;
                  </p>
 
                  {/* Video Player Placeholder as in image */}
@@ -330,6 +337,19 @@ export default function TestimoniosPage() {
                     ))}
                  </div>
               </div>
+
+               {/* Modal Footer */}
+               <div className="p-8 bg-gray-50/50 border-t border-gray-50 flex items-center justify-end gap-3">
+                  <button 
+                    onClick={() => setPreviewTestimonial(null)}
+                    className="px-6 py-2.5 font-bold text-gray-500 hover:text-gray-900 transition-all"
+                  >
+                    Cerrar
+                  </button>
+                  <button className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-100">
+                    Editar Testimonio
+                  </button>
+               </div>
             </motion.div>
           </div>
         )}

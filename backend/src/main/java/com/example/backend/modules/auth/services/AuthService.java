@@ -7,6 +7,7 @@ import com.example.backend.modules.auth.repositories.UserRepository;
 import com.example.backend.modules.auth.models.dtos.AuthRequest;
 import com.example.backend.modules.auth.models.dtos.AuthResponse;
 import com.example.backend.modules.auth.models.dtos.RegisterRequest;
+import com.example.backend.shared.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -46,7 +47,7 @@ public class AuthService implements UserDetailsService {
                 new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
         String token = jwtUtils.generateToken(user);
         return new AuthResponse(token);
@@ -55,6 +56,15 @@ public class AuthService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado: " + username));
+    }
+
+    public Boolean existsById(Long id){
+        return userRepository.existsById(id);
+    }
+
+    public User findById(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
 }

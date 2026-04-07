@@ -9,7 +9,9 @@ import {
   Edit3, 
   Trash2, 
   X,
-  Play
+  Play,
+  Database,
+  Loader2
 } from "lucide-react";
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,6 +19,8 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Link from "next/link";
+import { seedMockTestimonialsAction } from "@/lib/actions/testimonials";
+import { toast } from "sonner";
 
 
 const initialTestimonials = [
@@ -111,6 +115,7 @@ export default function TestimoniosPage() {
   const [selectedStatus, setSelectedStatus] = useState("Todos los estados");
   const [selectedCategory, setSelectedCategory] = useState("Todas las categorías");
   const [previewTestimonial, setPreviewTestimonial] = useState<(typeof initialTestimonials)[0] | null>(null);
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const filtered = useMemo(() => {
     return initialTestimonials.filter(t => {
@@ -122,6 +127,17 @@ export default function TestimoniosPage() {
     });
   }, [searchTerm, selectedStatus]);
 
+  const handleSeed = async () => {
+    setIsSeeding(true);
+    const res = await seedMockTestimonialsAction();
+    if (res.success) {
+      toast.success(`¡Éxito! Se migraron ${res.count} testimonios a la DB.`);
+    } else {
+      toast.error(res.error || "No se pudo migrar la información.");
+    }
+    setIsSeeding(false);
+  };
+
   return (
     <div className="space-y-8 pb-20">
       {/* Header and Quick Filters */}
@@ -130,10 +146,20 @@ export default function TestimoniosPage() {
           <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Mis Testimonios</h1>
           <p className="text-gray-500 font-medium">Gestiona y visualiza todos tus testimonios recibidos</p>
         </div>
-        <Link href="/dashboard/ver-testimonios/nuevo" className="saas-button-primary flex items-center gap-2 w-fit">
-          <Plus className="w-5 h-5" />
-          Nuevo Testimonio
-        </Link>
+        <div className="flex items-center gap-3">
+          <button 
+            disabled={isSeeding}
+            onClick={handleSeed}
+            className="px-4 py-2 bg-amber-50 text-amber-600 border border-amber-100 rounded-xl font-bold text-xs flex items-center gap-2 hover:bg-amber-100 transition-all disabled:opacity-50"
+          >
+            {isSeeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4" />}
+            Sembrar Mocks en DB
+          </button>
+          <Link href="/dashboard/ver-testimonios/nuevo" className="saas-button-primary flex items-center gap-2 w-fit">
+            <Plus className="w-5 h-5" />
+            Nuevo Testimonio
+          </Link>
+        </div>
       </div>
 
       {/* Filter Bar */}

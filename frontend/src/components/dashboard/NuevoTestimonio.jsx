@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useLocation } from "react-router";
 import { useNavigate } from "react-router";
 import toast, { Toaster } from 'react-hot-toast'
@@ -46,52 +46,104 @@ export function NuevoTestimonio () {
 
   const usuario = JSON.parse(localStorage.getItem("user"));
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const nuevoTestimonio = {
-      id: Date.now(),
-      email: usuario?.email, //No es del form, es del sistema
-      firstName,
-      surname,
-      rol,
-      organizacion,
-      comentario,
-      imagen,
-      video,
-      rating,
-      estado: esAdmin ? "Aprobado" : "Pendiente"
-    }
+  const token = localStorage.getItem("token");
 
-    if (!firstName || !surname || !rol || !organizacion || !comentario) {
-      toast.error("Faltan campos que completar")
-      return;
-    }
+  if (!firstName || !surname || !rol || !organizacion || !comentario) {
+    toast.error("Faltan campos que completar");
+    return;
+  }
 
-    if(!usuario) {
-      toast.error("Debes iniciar sesión");
-      navigate("/");
-      return;
-    }
+  if (!categoryId) {
+  toast.error("Debes seleccionar una categoría");
+  return;
+  }
+  
+  if (!usuario) {
+    toast.error("Debes iniciar sesión");
+    navigate("/");
+    return;
+  }
 
-    const existente = JSON.parse(localStorage.getItem("testimonios")) || [];
+  try {
+    const res = await fetch("http://localhost:8080/api/testimonials", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        content: comentario,
+        authorName: `${firstName} ${surname}`,
+        authorRole: rol,
+        rating: rating,
+        categoryId: Number(categoryId),
+        tagIds: []
+      })
+    });
 
-    existente.push(nuevoTestimonio)
+  console.log({
+  content: comentario,
+  authorName: `${firstName} ${surname}`,
+  authorRole: rol,
+  rating,
+  categoryId
+});
 
-    localStorage.setItem("testimonios" , JSON.stringify(existente))
+    if (!res.ok) {
+    const errorText = await res.text();
+    console.log("ERROR BACK:", errorText);
+    return;
+  }
+
+    const data = await res.json();
+
+    console.log("CREADO:", data);
 
     Swal.fire({
-    title: "Testimonio Creado",
-    icon: "success",
+      title: "Testimonio Creado",
+      icon: "success",
     }).then(() => {
       if (esAdmin) {
         navigate("/dashboard/moderacion");
       } else {
         navigate("/dashboard");
       }
-  });
+    });
 
-}
+  } catch (error) {
+    console.error("Error al crear testimonio", error);
+  }
+
+};
+
+const [categorias, setCategorias] = useState([]);
+const [categoryId, setCategoryId] = useState("");
+
+useEffect(() => {
+  const traerCategorias = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const res = await fetch("http://localhost:8080/api/categories?type=APPROVED", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+      setCategorias(data.content); // 👈 importante (viene en content)
+    } catch (error) {
+      console.error("Error al traer categorías");
+    }
+  };
+
+  traerCategorias();
+}, []);
+
+
 
 
 
@@ -175,6 +227,26 @@ return(
         </video>
       )}
     </div>
+
+    <div>
+  <label className="block text-sm font-semibold text-gray-900">
+    Categoría
+  </label>
+
+  <select
+    value={categoryId}
+    onChange={(e) => setCategoryId(e.target.value)}
+    className="block w-full rounded-md border px-3 py-2"
+  >
+    <option value="">Seleccionar categoría</option>
+
+    {categorias.map((cat) => (
+      <option key={cat.id} value={cat.id}>
+        {cat.name}
+      </option>
+    ))}
+  </select>
+</div>
     
     {/*CALIFICACION*/}
     <div className="flex gap-1 text-2xl">
@@ -209,5 +281,6 @@ return(
         </>
     )
 }
+
 
 export default NuevoTestimonio

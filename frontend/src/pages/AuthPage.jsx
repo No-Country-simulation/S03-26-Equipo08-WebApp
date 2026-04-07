@@ -9,36 +9,46 @@ const AuthPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    
-      e.preventDefault();
+  
+  
 
-      const { email } = formData;
 
-  // 🔹 Simulación de roles
-      let role = "user";
 
-      if (email === "admin@mail.com") {
-        role = "admin";
-      }
+  const handleSubmit = async (e) => {
+  e.preventDefault();
 
-  // 🔹 Guardar role
-  localStorage.setItem("role", role);
+  try {
+      const res = await fetch (`http://localhost:8080/api/auth/login` , {
+      method:"POST",
+        headers: {
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+    })
+    const data = await res.json()
 
-  // 🔹 (opcional) guardar usuario
-  localStorage.setItem("user", JSON.stringify({ email, role }));
+    localStorage.setItem("token" , data.token)
 
-  // 🔹 Verificar testimonios
-  const testimonios = JSON.parse(localStorage.getItem("testimonios")) || [];
+    localStorage.setItem("user" , JSON.stringify({
+      email: formData.email
+    }));
 
-  if (testimonios.length === 0) {
-    navigate("/crear");
-  } else {
     navigate("/dashboard");
+  
+  } catch (error) {
+    console.error("Error al iniciar sesión" , error);
   }
 };
 
-  return (
+
+
+  
+
+
+return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white font-sans px-4">
       <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
         
@@ -91,3 +101,32 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
+
+
+
+
+/*
+      const { email } = formData;
+
+  // 🔹 Simulación de roles
+      let role = "user";
+
+      if (email === "admin@mail.com") {
+        role = "admin";
+      }
+
+  // 🔹 Guardar role
+  localStorage.setItem("role", role);
+
+  // 🔹 (opcional) guardar usuario
+  localStorage.setItem("user", JSON.stringify({ email, role }));
+
+  // 🔹 Verificar testimonios
+  const testimonios = JSON.parse(localStorage.getItem("testimonios")) || [];
+
+  if (testimonios.length === 0) {
+    navigate("/crear");
+  } else {
+    navigate("/dashboard");
+  }
+*/

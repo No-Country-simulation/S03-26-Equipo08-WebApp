@@ -1,24 +1,115 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 
 export function Moderacion () {
 
-const [testimonios, setTestimonios] = useState(
-  JSON.parse(localStorage.getItem("testimonios")) || []
-);
+const [testimonios, setTestimonios] = useState([]);
 
-const pendientes = testimonios.filter(t => t.estado === "Pendiente");
-const aprobados = testimonios.filter(t => t.estado === "Aprobado");
-const rechazados = testimonios.filter(t => t.estado === "Rechazado");
+const pendientes = testimonios.filter(t => t.status === "PENDING");
+const aprobados = testimonios.filter(t => t.status === "APPROVED");
+const rechazados = testimonios.filter(t => t.status === "REJECTED");
 
 const actualizarEstado = (id, nuevoEstado) => {
   const actualizados = testimonios.map(t =>
-    t.id === id ? { ...t, estado: nuevoEstado } : t
+    t.id === id ? { ...t, status: nuevoEstado } : t
   );
 
   setTestimonios(actualizados);
-  localStorage.setItem("testimonios", JSON.stringify(actualizados));
 };
+
+//CONEXIÓN A LA API
+const aprobarTestimonios = async (id) => {
+  const token = localStorage.getItem("token")
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/testimonials/approve/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+
+    if (res.ok) {
+      setTestimonios(prev =>
+        prev.map(t =>
+          t.id === id ? { ...t, status: "APPROVED" } : t
+        )
+      );
+    }
+
+    console.log("STATUS:", res.status);
+
+  } catch (error) {
+    console.error("Error al aprobar");
+  }
+};
+
+const rechazarTestimonios = async (id) => {
+  const token = localStorage.getItem("token")
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/testimonials/reject/${id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+    });
+
+    if (res.ok) {
+      setTestimonios(prev =>
+        prev.map(t =>
+          t.id === id ? { ...t, status: "REJECTED" } : t
+        )
+      );
+    }
+
+    console.log("STATUS:", res.status);
+
+  } catch (error) {
+    console.error("Error al rechazar");
+  }
+};
+
+
+
+useEffect(() => {
+  const traerTestimonios = async () => {
+    const token = localStorage.getItem("token")
+
+    try {
+      const res = await fetch("http://localhost:8080/api/testimonials/search?status=PENDING", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+
+      console.log("RES:", res)
+
+      const data = await res.json()
+
+      console.log("JSON:", data)
+
+      // 🔥 CLAVE
+  if (Array.isArray(data)) {
+  setTestimonios(data);
+} else if (Array.isArray(data.content)) {
+  setTestimonios(data.content);
+} else {
+  console.error("Respuesta inválida:", data);
+  setTestimonios([]); // 👈 evita que rompa
+}
+
+    } catch (error) {
+      console.error("Error al traer testimonios")
+    }
+  }
+
+  traerTestimonios()
+}, [])
+
+
+
+
 
 
 const CardTestimonio = ({data}) => (
@@ -36,10 +127,10 @@ const CardTestimonio = ({data}) => (
 
         <div>
           <h3 className="font-semibold text-gray-800">
-            {data.nombre || `${data.firstName} ${data.surname}`}
+            {data.authorName || `${data.firstName} ${data.surname}`}
           </h3>
           <p className="text-sm text-gray-500">
-            {data.rol} en {data.empresa || data.organizacion}
+            {data.authorRole}
           </p>
         </div>
       </div>
@@ -52,7 +143,7 @@ const CardTestimonio = ({data}) => (
 
     {/* Mensaje */}
     <p className="text-gray-600 text-sm leading-relaxed">
-      {data.mensaje || data.comentario}
+      {data.content || data.comentario}
     </p>
 
     {/* Rating texto */}
@@ -64,17 +155,18 @@ const CardTestimonio = ({data}) => (
 
     {/* Botones */}
     <div className="flex gap-4 mt-6">
-      <button onClick={() => actualizarEstado(data.id, "Aprobado")} className="bg-green-500 text-white px-4 py-2 rounded-md w-full">
+      <button onClick={() => aprobarTestimonios(data.id)} className="bg-green-500 text-white px-4 py-2 rounded-md w-full">
         Aceptar
       </button>
 
-      <button onClick={() => actualizarEstado(data.id, "Rechazado")} className="bg-red-500 text-white px-4 py-2 rounded-md w-full">
+      <button onClick={() => rechazarTestimonios(data.id)} className="bg-red-500 text-white px-4 py-2 rounded-md w-full">
         Rechazar
       </button>
     </div>
   </div>
 );
-    
+
+
 return (
         <>
             <h2 style={{fontSize:'xx-large'}} className="text-2xl font-bold">Panel de Moderación</h2>
@@ -116,11 +208,11 @@ return (
     data={t}
   />
 ))}
-
 </div>
 
         </>
-    )
+)
 }
-
 export default Moderacion
+
+

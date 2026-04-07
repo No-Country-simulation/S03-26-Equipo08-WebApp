@@ -20,6 +20,7 @@ public record TestimonialRequest(
         @NotNull @Min(0) @Max(5)
         Integer rating, //calificacion del 0 a 5
 
+        @NotNull
         Long categoryId,
 
         Set<Long>tagIds

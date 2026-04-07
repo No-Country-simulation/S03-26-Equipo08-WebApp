@@ -16,8 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,13 +36,17 @@ public class TestimonialServiceImpl implements TestimonialService {
 
     @Override
     public TestimonialResponse create(TestimonialRequest t) {
+
+        Set<Long> tagIds = Optional.ofNullable(t.tagIds())
+                .orElse(Collections.emptySet());
+
         Testimonial testimonial = Testimonial.builder()
                 .content(t.content())
                 .authorName(t.authorName())
                 .authorRole(t.authorRole())
                 .rating(t.rating())
                 .category(categoryService.applyCategory(t.categoryId()))
-                .tags(tagService.applyTags(t.tagIds()))
+                .tags(tagService.applyTags(tagIds))
                 .build();
         return toResponse(testimonialRepository.save(testimonial));
     }

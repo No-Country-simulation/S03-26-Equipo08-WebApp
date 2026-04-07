@@ -4,6 +4,7 @@ import com.example.backend.modules.auth.models.entities.User;
 import com.example.backend.modules.category.models.dtos.CategoryRequest;
 import com.example.backend.modules.category.models.dtos.CategoryResponse;
 import com.example.backend.modules.category.models.dtos.CategoryUpdateRequest;
+import com.example.backend.modules.category.models.entities.Category;
 import org.springframework.data.domain.Page;
 
 import java.nio.file.AccessDeniedException;
@@ -15,5 +16,7 @@ public interface CategoryService {
     CategoryResponse create(CategoryRequest categoryRequest);
     CategoryResponse update(Long id, CategoryUpdateRequest categoryUpdateRequest, User currentUser) throws AccessDeniedException;
     void delete(Long id);
+    Category applyCategory(Long id);
+    Category findByPublicToken(String publicToken);
     Page<CategoryResponse> findAll(int page, int size);
 }

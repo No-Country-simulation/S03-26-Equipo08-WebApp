@@ -11,11 +11,13 @@ public interface TestimonialService {
 
     TestimonialResponse create(TestimonialRequest t);
 
-    TestimonialResponse createPublic(Long categoryId, PublicTestimonialRequest t);
-
     TestimonialResponse update(Long id, TestimonialUpdateRequest t);
 
     void delete(Long id);
+
+    PublicTestimonialInfoResponse getPublicInfo(String publicToken);
+
+    TestimonialResponse createPublic(String publicToken, PublicTestimonialRequest t);
 
     Page<TestimonialResponse> findByFilters(Integer rating, Long categoryId, Long tagId, TestimonialStatus status, int page, int size);
 }

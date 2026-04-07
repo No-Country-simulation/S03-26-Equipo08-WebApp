@@ -65,10 +65,17 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category findByPublicToken(String publicToken){
+        return categoryRepository.findByPublicToken(publicToken)
+                .orElseThrow(()->new ResourceNotFoundException("public token invalido."));
+    }
+
+    @Override
     public void delete(Long id){
         categoryRepository.deleteById(id);
     }
 
+    @Override
     public Category applyCategory(Long id){
         return categoryRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("no se encontro id "+id));

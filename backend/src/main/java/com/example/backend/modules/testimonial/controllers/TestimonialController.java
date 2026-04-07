@@ -53,11 +53,18 @@ public class TestimonialController {
         return testimonialService.create(testimonialRequest);
     }
 
-    @PostMapping("/public/{categoryId}")
+    @GetMapping("/public/{publicToken}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Verifica que exista el public token del link antes de llegar al formulario")
+    public PublicTestimonialInfoResponse getPublicInfo(@PathVariable String publicToken){
+        return testimonialService.getPublicInfo(publicToken);
+    }
+
+    @PostMapping("/public/{publicToken}")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Crear un nuevo testimonio (publico)")
-    public TestimonialResponse createPublic(@PathVariable Long categoryId,@Valid @RequestBody PublicTestimonialRequest testimonialRequest){
-        return testimonialService.createPublic(categoryId,testimonialRequest);
+    @Operation(summary = "Crear un nuevo testimonio desde el formulario publico")
+    public TestimonialResponse createPublic(@PathVariable String publicToken,@Valid @RequestBody PublicTestimonialRequest testimonialRequest){
+        return testimonialService.createPublic(publicToken,testimonialRequest);
     }
 
     @PutMapping("/{id}")

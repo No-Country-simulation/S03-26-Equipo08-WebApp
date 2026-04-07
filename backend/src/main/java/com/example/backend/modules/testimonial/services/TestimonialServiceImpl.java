@@ -1,7 +1,10 @@
 package com.example.backend.modules.testimonial.services;
 
+import com.example.backend.modules.category.models.entities.Category;
 import com.example.backend.modules.category.models.entities.Tag;
+import com.example.backend.modules.category.services.CategoryService;
 import com.example.backend.modules.category.services.CategoryServiceImpl;
+import com.example.backend.modules.category.services.TagService;
 import com.example.backend.modules.category.services.TagServiceImpl;
 import com.example.backend.modules.testimonial.models.dtos.*;
 import com.example.backend.modules.testimonial.models.entities.Testimonial;
@@ -24,8 +27,8 @@ import java.util.stream.Collectors;
 public class TestimonialServiceImpl implements TestimonialService {
 
     private final TestimonialRepository testimonialRepository;
-    private final CategoryServiceImpl categoryService;
-    private final TagServiceImpl tagService;
+    private final CategoryService categoryService;
+    private final TagService tagService;
 
     @Override
     public TestimonialResponse getById(Long id) {
@@ -52,13 +55,25 @@ public class TestimonialServiceImpl implements TestimonialService {
     }
 
     @Override
-    public TestimonialResponse createPublic(Long categoryId, PublicTestimonialRequest t) {
+    public PublicTestimonialInfoResponse getPublicInfo(String publicToken){
+        Category category = categoryService.findByPublicToken(publicToken);
+        return new PublicTestimonialInfoResponse(
+                category.getName(),
+                category.getSlug()
+        );
+    }
+
+    @Override
+    public TestimonialResponse createPublic(String publicToken, PublicTestimonialRequest t) {
+
+        Category category = categoryService.findByPublicToken(publicToken);
+
         Testimonial testimonial = Testimonial.builder()
                 .content(t.content())
                 .authorName(t.authorName())
                 .authorRole(t.authorRole())
                 .rating(t.rating())
-                .category(categoryService.applyCategory(categoryId))
+                .category(categoryService.applyCategory(category.getId()))
                 .tags(new HashSet<>())
                 .build();
         return toResponse(testimonialRepository.save(testimonial));

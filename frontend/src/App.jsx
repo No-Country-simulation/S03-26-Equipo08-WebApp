@@ -1,17 +1,49 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { useState } from 'react'
+import Header from './components/home/Header'
+import './App.css'
+import { Route, Routes, Navigate } from "react-router";
+import DashboardLayout from './components/dashboard/DashboardLayout';
+import FirstPage from './components/dashboard/FirstPage';
+import Testimonios from './components/dashboard/Testimonios';
+import NuevoTestimonio from './components/dashboard/NuevoTestimonio';
+import Moderacion from './components/dashboard/Moderacion';
+
+//MAXI
 import AuthPage from './pages/AuthPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx'; // 1. Importa la nueva página
-import Dashboard from './pages/Dashboard.jsx';
+import DashboardAuth from './pages/DashboardAuth.jsx';
+import Embeds from './components/dashboard/Embeds.jsx';
 
 function App() {
+
   return (
-    <Routes>
-      <Route path="/" element={<AuthPage />} />
-      <Route path="/register" element={<RegisterPage />} /> {/* 2. Agrega la ruta */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-  );
+    <>
+      <Routes>
+        {/*Home*/}
+        <Route path="/" element={<Navigate to="/home" replace />} />
+        
+        {/*Login y Register*/}
+        <Route path="/login" element={<AuthPage />} />
+        <Route path="/register" element={<RegisterPage />} /> {/* 2. Agrega la ruta */}
+        <Route path="/dashboardAuth" element={<DashboardAuth />} />
+        
+        <Route path='/crear' element={<NuevoTestimonio/>}></Route>
+
+        <Route path="/home" element={<Header/>} />
+
+        {/*Dashboard*/}
+        <Route path='/dashboard' element={<DashboardLayout/>}>
+          <Route index element={<FirstPage/>}/>
+          <Route path='nuevoTestimonio' element={<NuevoTestimonio/>}></Route>
+          <Route path='testimonios' element={<Testimonios/>}></Route>
+          <Route path='moderación' element={<Moderacion/>}></Route>
+          <Route path='embeds' element={<Embeds/>}></Route>
+        </Route>
+      </Routes>
+    </>
+  )
 }
 
-export default App;
+export default App
+
+//<Route path="*" element={<Navigate to="/" replace />} />

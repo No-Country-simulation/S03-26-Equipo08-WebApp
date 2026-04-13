@@ -6,6 +6,7 @@ import TextsmsIcon from '@mui/icons-material/Textsms';
 import DownloadDoneIcon from '@mui/icons-material/DownloadDone';
 import CategoryIcon from '@mui/icons-material/Category';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import {Outlet} from "react-router"
 import {NavLink} from 'react-router';
 
 
@@ -13,13 +14,18 @@ export function Dashboard () {
 const [open, setOpen] = React.useState(false);
 
 const DrawerList = (
-    <Box sx={{ width: 250,
-      height: '100vh',
-      background: '#4A90E2',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      borderRight: '1px solid #e5e7eb'}} role="presentation">
+    <Box sx={{
+        width: 250,
+        height: "100vh",
+        position: "fixed", // 🔥 CLAVE
+        top: 0,
+        left: 0,
+        background: "#4A90E2",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        borderRight: "1px solid #e5e7eb",
+      }} role="presentation">
     
     <List>
         <nav>
@@ -30,6 +36,7 @@ const DrawerList = (
                 <li style={{marginTop:'12%'}}><DownloadDoneIcon/><NavLink style={{marginLeft:'3%' , fontWeight:'bold'}} to='moderación'>Moderación</NavLink></li>
                 <li style={{marginTop:'12%'}}><CategoryIcon/><a style={{marginLeft:'3%', fontWeight:'bold'}} href="">Categorias</a></li>
                 <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to='embeds'>Embeds</NavLink></li>
+                <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to='apiDocumento'>ApiDocs</NavLink></li>
             </ul>
         </nav>
     </List>
@@ -66,9 +73,7 @@ const DrawerList = (
 );
     return(
         <>
-            <div>
-                {DrawerList}
-            </div>
+          {DrawerList}
         </>
     )
 }

@@ -13,6 +13,7 @@ import AuthPage from './pages/AuthPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx'; // 1. Importa la nueva página
 import DashboardAuth from './pages/DashboardAuth.jsx';
 import Embeds from './components/dashboard/Embeds.jsx';
+import ApiDocs from './components/dashboard/ApiDocs.jsx';
 
 function App() {
 
@@ -36,8 +37,10 @@ function App() {
           <Route index element={<FirstPage/>}/>
           <Route path='nuevoTestimonio' element={<NuevoTestimonio/>}></Route>
           <Route path='testimonios' element={<Testimonios/>}></Route>
+          <Route path='apiDocumento' element={<ApiDocs/>}></Route>
           <Route path='moderación' element={<Moderacion/>}></Route>
           <Route path='embeds' element={<Embeds/>}></Route>
+          <Route path='testimonio/editar/:id' element={<NuevoTestimonio/>}></Route>
         </Route>
       </Routes>
     </>

@@ -1,5 +1,5 @@
 import { useState , useEffect } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { useNavigate } from "react-router";
 import toast, { Toaster } from 'react-hot-toast'
 import Swal from 'sweetalert2'
@@ -9,15 +9,102 @@ export function NuevoTestimonio () {
   const navigate = useNavigate()
   const location = useLocation()
   const esAdmin = localStorage.getItem("role") === "admin"
+  const {id} = useParams();
   
   const [imagen, setImagen] = useState(null);
   const [video, setVideo] = useState(null);
 
+  const [url, setUrl] = useState("");
+
+  
+  // 🔥 extrae el ID del video
+  const getVideoId =(url) => {
+    const regExp =/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  };
+
+  const videoId = getVideoId(url);
+
+  {/*API PARA REGISTROS DE MULTIPLES ARCHIVOS DE YOUTUBE*/}
+  const [urls, setUrls] = useState([""]);
+  const videosYoutube = async (id) => {
+    const token = localStorage.getItem("token")
+    
+    const urlsValidas = urls.filter(u => u.trim() !== "");
+    try {
+    const res = await fetch (`http://localhost:8080/api/media/youtube-batch/${id}` , {
+      method:"POST",
+        headers: {
+          "Content-Type" : "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          videos: urlsValidas.map((url) => ({
+            youtubeUrl: url,
+          })),
+        })
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.log("ERROR BACK:", errorText);
+      return;
+    }
+    
+    console.log("Archivos subidos correcatemente!");
+  
+  } catch (error) {
+    console.log("Error al subir los archivos " , error);
+  }
+}
+
+  {/*API PARA SUBIR MULTIPLES ARCHIVOS A CLOUDINARY*/}  
+  const [files , setFiles] = useState("")
+
+  const archivosCloudinary = async (id) => {
+    const token = localStorage.getItem("token")
+    if(files.length === 0) return;
+
+    const formData = new FormData ();
+
+    files.forEach((file) => {
+      formData.append("files", file); // 👈 clave
+    });
+
+    try {
+      const res = await fetch (`http://localhost:8080/api/media/upload-batch/${id}` , {
+        method:"POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+          body: formData,
+      })
+
+      console.log("STATUS CLOUDINARY:", res.status);
+
+      if(!res.ok) {
+        const error = await res.text()
+        console.log("ERROR BACK:", error);
+        return;
+      }
+
+      const data = await res.json()
+      console.log("ARCHIVOS SUBIDOS" , data);
+      
+    } catch (error) {
+      console.error("Error al subir los archivos a Cloudinary" , error);
+    }
+  } 
+
+  
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
 
   const handleFile = (file) => {
     if (!file) return;
+
+    setFiles((prev) => [...prev, file]);
 
     if (file.type.startsWith("image/")) {
       setImagen(URL.createObjectURL(file));
@@ -36,6 +123,7 @@ export function NuevoTestimonio () {
     const file = e.target.files[0];
     handleFile(file);
   };
+
 
   const [firstName , setFirstName] = useState("");
   const [surname , setSurname] = useState("");
@@ -68,8 +156,14 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    const res = await fetch("http://localhost:8080/api/testimonials", {
-      method: "POST",
+    const url = id
+    ? `http://localhost:8080/api/testimonials/${id}`
+    : `http://localhost:8080/api/testimonials`
+
+    const method = id ? "PUT" : "POST";
+    
+    const res = await fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
@@ -99,11 +193,28 @@ const handleSubmit = async (e) => {
   }
 
     const data = await res.json();
+    await archivosCloudinary(data.id)
+    await videosYoutube(data.id)
+    
+    // 🔥 TRAER TESTIMONIO ACTUALIZADO
+const resUpdated = await fetch(
+  `http://localhost:8080/api/testimonials/${data.id}`,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
 
-    console.log("CREADO:", data);
+const updated = await resUpdated.json();
+console.log("ACTUALIZADO:", updated);
+
+    
+    console.log("URL:", url);
+    console.log(id ? "EDITADO" : "CREADO:", data);
 
     Swal.fire({
-      title: "Testimonio Creado",
+      title: id ? "Testimonio Creado" : "Testimonio Editado",
       icon: "success",
     }).then(() => {
       if (esAdmin) {
@@ -134,6 +245,7 @@ useEffect(() => {
       });
 
       const data = await res.json();
+      
       setCategorias(data.content); // 👈 importante (viene en content)
     } catch (error) {
       console.error("Error al traer categorías");
@@ -142,6 +254,36 @@ useEffect(() => {
 
   traerCategorias();
 }, []);
+
+
+useEffect(() => {
+  if (!id) return;
+
+  const traerTestimonio = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:8080/api/testimonials/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    setComentario(data.content);
+    
+    // si querés más completo:
+    const [nombre, apellido] = data.authorName.split(" ");
+    setFirstName(nombre);
+    setSurname(apellido);
+    setRol(data.authorRole);
+    setRating(data.rating);
+    setCategoryId(data.category?.id);
+  };
+
+  traerTestimonio();
+}, [id]);
+
 
 
 
@@ -222,7 +364,7 @@ return(
 
       {/* PREVIEW VIDEO */}
       {video && (
-        <video controls className="w-full max-w-xs rounded-lg">
+        <video controls className="w-full max-w-[300px] max-h-[200px] rounded-lg object-cover">
           <source src={video} />
         </video>
       )}
@@ -246,6 +388,61 @@ return(
       </option>
     ))}
   </select>
+</div>
+
+    {/*LINK DE YOUTUBE*/}
+    <div style={{ marginTop: "10px" }}>
+  {urls.map((u, index) => {
+    const videoId = getVideoId(u);
+
+    return (
+      <div key={index} className="mb-4">
+        <input
+          type="text"
+          placeholder="Pega el link de youtube"
+          value={u}
+          onChange={(e) => {
+            const nuevas = [...urls];
+            nuevas[index] = e.target.value;
+            setUrls(nuevas);
+          }}
+          className="border p-2 w-full"
+        />
+
+        {/* Preview */}
+        {videoId && (
+          <iframe
+            className="w-full max-w-[400px] h-[200px] mt-3 rounded"
+            src={`https://www.youtube.com/embed/${videoId}`}
+            allowFullScreen
+          />
+        )}
+
+        {/* Botón eliminar */}
+        {urls.length > 1 && (
+          <button
+            type="button"
+            onClick={() => {
+              const nuevas = urls.filter((_, i) => i !== index);
+              setUrls(nuevas);
+            }}
+            className="text-red-500 mt-2"
+          >
+            Eliminar
+          </button>
+        )}
+      </div>
+    );
+  })}
+
+  {/* Agregar otro */}
+  <button
+    type="button"
+    onClick={() => setUrls([...urls, ""])}
+    className="bg-gray-300 px-3 py-1 rounded"
+  >
+    + Agregar otro video
+  </button>
 </div>
     
     {/*CALIFICACION*/}

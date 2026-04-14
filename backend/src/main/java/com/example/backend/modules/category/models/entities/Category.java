@@ -26,6 +26,9 @@ public class Category {
     @Column(nullable = false)
     private String slug;
 
+    @Column(nullable = false)
+    private String hexColor;
+
     @Column(unique = true, nullable = false)
     @Builder.Default
     private String publicToken= UUID.randomUUID().toString(); // el token único del link público

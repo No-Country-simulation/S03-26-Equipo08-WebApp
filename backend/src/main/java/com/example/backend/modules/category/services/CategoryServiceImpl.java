@@ -59,6 +59,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         c.setName(categoryUpdateRequest.name());
         c.setSlug(categoryUpdateRequest.slug());
+        c.setHexColor(categoryUpdateRequest.hexColor());
         c.setType(categoryUpdateRequest.type());
 
         return toResponse(categoryRepository.save(c));
@@ -93,6 +94,7 @@ public class CategoryServiceImpl implements CategoryService {
                 c.getId(),
                 c.getName(),
                 c.getSlug(),
+                c.getHexColor(),
                 c.getType().name(),
                 c.getOwner().getId()
         );
@@ -103,6 +105,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .name(request.name())
                 .slug(request.slug())
                 .type(request.type())
+                .hexColor(request.hexColor())
                 .owner(user)
                 .build();
     }

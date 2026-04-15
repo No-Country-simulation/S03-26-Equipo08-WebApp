@@ -40,7 +40,7 @@ useEffect(() => {
 
     return (
         <>
-        <div className="container grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 md:px-6">
+        <div style={{marginLeft:'10%'}} className="container grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 md:px-6">
   {testimonios.map((t) => (
     <div
       key={t.id}

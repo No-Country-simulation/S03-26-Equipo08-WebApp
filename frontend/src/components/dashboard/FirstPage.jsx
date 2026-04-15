@@ -1,6 +1,51 @@
 import TextsmsIcon from '@mui/icons-material/Textsms';
+import React from 'react';
+import {useState , useEffect} from 'react'
 
 export function FirstPage () {
+
+const [total, setTotal] = useState(0);
+const [aprobados, setAprobados] = useState(0);
+const [pendientes, setPendientes] = useState(0);
+const [rechazados, setRechazados] = useState(0);
+
+useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  const fetchData = async (status) => {
+    const res = await fetch(`http://localhost:8080/api/testimonials/search?status=${status}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await res.json();
+
+    if (Array.isArray(data)) return data.length;
+    if (Array.isArray(data.content)) return data.content.length;
+
+    return 0;
+  };
+
+  const cargarDatos = async () => {
+    try {
+      const pendientesData = await fetchData("PENDING");
+      const aprobadosData = await fetchData("PUBLISHED");
+      const rechazadosData = await fetchData("REJECTED");
+
+      setPendientes(pendientesData);
+      setAprobados(aprobadosData);
+      setRechazados(rechazadosData);
+      setTotal(pendientesData + aprobadosData + rechazadosData);
+
+    } catch (error) {
+      console.error("Error cargando métricas", error);
+    }
+  };
+
+  cargarDatos();
+}, []);
+  
 
     return (
         <>
@@ -12,32 +57,32 @@ export function FirstPage () {
                     <span>Total Testimonios</span>
                     <TextsmsIcon style={{marginLeft:'40%'}}/>
                 </div>
-                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>0</h5>
+                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>{total}</h5>
                 <p>todos los testimonios</p>
             </div>
             <div className='' style={{marginTop:'7%' , border:'groove' , borderRadius:'5px' , width:'17%' , padding:'8px'}}>
                 <div>
-                    <span>Total Testimonios</span>
+                    <span>Aprobados</span>
                     <TextsmsIcon style={{marginLeft:'40%'}}/>
                 </div>
-                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>0</h5>
-                <p>todos los testimonios</p>
+                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>{aprobados}</h5>
+                <p>Publicados en el sitio</p>
             </div>
             <div className='' style={{marginTop:'7%' , border:'groove' , borderRadius:'5px' , width:'17%' , padding:'8px'}}>
                 <div>
-                    <span>Total Testimonios</span>
+                    <span>Pendientes</span>
                     <TextsmsIcon style={{marginLeft:'40%'}}/>
                 </div>
-                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>0</h5>
-                <p>todos los testimonios</p>
+                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>{pendientes}</h5>
+                <p>Esperando revisión</p>
             </div>
             <div className='' style={{marginTop:'7%' , border:'groove' , borderRadius:'5px' , width:'17%' , padding:'8px'}}>
                 <div>
-                    <span>Total Testimonios</span>
+                    <span>Rechazados</span>
                     <TextsmsIcon style={{marginLeft:'40%'}}/>
                 </div>
-                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>0</h5>
-                <p>todos los testimonios</p>
+                <h5 style={{marginTop:'3%' , fontWeight:'bold' , fontSize:'xx-large'}}>{rechazados}</h5>
+                <p>No aprobados</p>
             </div>
         </div>
 

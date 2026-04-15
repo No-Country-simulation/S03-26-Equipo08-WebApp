@@ -49,7 +49,7 @@ const DrawerList = (
     />
 
     <div style={{ marginLeft: '10px' }}>
-      <p style={{ margin: 0, fontWeight: 'bold' , color:'white' }}>Lautaro Frioni</p>
+      <p style={{ margin: 0, fontWeight: 'bold' , color:'white' }}>User</p>
       <p style={{ margin: 0, fontSize: '12px', color: 'white' }}>Admin</p>
     </div>
   </div>

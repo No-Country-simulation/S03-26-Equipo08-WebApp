@@ -12,7 +12,7 @@ const [testimonios, setTestimonios] = useState([]);
 
 const pendientes = testimonios.filter(t => t.status === "PENDING");
 const aprobados = testimonios.filter(t => t.status === "PUBLISHED");
-const rechazados = testimonios.filter(t => t.status === "REJECT");
+const rechazados = testimonios.filter(t => t.status === "REJECTED");
 
 const actualizarEstado = (id, nuevoEstado) => {
   const actualizados = testimonios.map(t =>
@@ -96,7 +96,7 @@ const rechazarTestimonios = async (id) => {
     if (res.ok) {
       setTestimonios(prev =>
         prev.map(t =>
-          t.id === id ? { ...t, status: "REJECT" } : t
+          t.id === id ? { ...t, status: "REJECTED" } : t
         )
       );
     }

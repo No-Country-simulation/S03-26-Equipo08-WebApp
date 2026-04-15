@@ -1,0 +1,22 @@
+# Repository level ignore
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.local
+.env.*.local
+
+# Dependency directories
+node_modules/
+
+# Next.js / Vite build outputs (shared)
+.next/
+dist/
+build/
+coverage/
+
+# Misc
+.vercel
+next-env.d.ts

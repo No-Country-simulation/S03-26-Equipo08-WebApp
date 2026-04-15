@@ -34,7 +34,7 @@ const DrawerList = (
                 <li style={{marginTop:'12%' , background:'lighskyblue' , padding:'5p%' , borderRadius:'10px'}}><TextsmsIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="nuevoTestimonio">Nuevo Testimonio</NavLink></li>
                 <li style={{marginTop:'12%'}}><TextsmsIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="testimonios">Testimonios</NavLink></li>
                 <li style={{marginTop:'12%'}}><DownloadDoneIcon/><NavLink style={{marginLeft:'3%' , fontWeight:'bold'}} to='moderación'>Moderación</NavLink></li>
-                <li style={{marginTop:'12%'}}><CategoryIcon/><a style={{marginLeft:'3%', fontWeight:'bold'}} href="">Categorias</a></li>
+                <li style={{marginTop:'12%'}}><CategoryIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to="categorias">Categorias</NavLink></li>
                 <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to='embeds'>Embeds</NavLink></li>
                 <li style={{marginTop:'12%'}}><ArrowBackIosNewIcon/><NavLink style={{marginLeft:'3%', fontWeight:'bold'}} to='apiDocumento'>ApiDocs</NavLink></li>
             </ul>

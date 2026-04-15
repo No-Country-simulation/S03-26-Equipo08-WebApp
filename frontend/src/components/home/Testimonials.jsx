@@ -40,7 +40,8 @@ useEffect(() => {
 
     return (
         <>
-        <div style={{marginLeft:'10%'}} className="container grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 md:px-6">
+        <h2 style={{marginLeft:'42%'}} className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">Testimonios</h2>
+        <div style={{marginLeft:'10%' , marginTop:'5%'}} className="container grid grid-cols-1 gap-6 px-4 md:grid-cols-2 lg:grid-cols-3 md:px-6">
   {testimonios.map((t) => (
     <div
       key={t.id}

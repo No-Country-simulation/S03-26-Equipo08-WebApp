@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { API_BASE_URL } from '../config/api'; 
+import { API_BASE_URL } from '../config/api';
+import logo from '../assets/logo.png'; 
 
 const AuthPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -49,7 +50,7 @@ const AuthPage = () => {
       <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
         
         <div className="flex flex-col items-center mb-4">
-          <img src="/src/assets/logo.png" alt="Logo" className="w-64 h-auto object-contain" />
+          <img src={logo} alt="Logo" className="w-64 h-auto object-contain" />
         </div>
 
         {successMessage && (

@@ -1,4 +1,5 @@
 import React from "react"
+import { API_BASE_URL } from '../../config/api';
 
 export function ApiDocs () {
     return (
@@ -18,7 +19,7 @@ export function ApiDocs () {
       <Section title="Inicio Rápido">
         <CodeBlock>
 {`Base URL:
-http://localhost:8080/api
+${API_BASE_URL}/api
 
 Autenticación:
 Authorization: Bearer TU_TOKEN`}

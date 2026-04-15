@@ -1,6 +1,7 @@
 import TextsmsIcon from '@mui/icons-material/Textsms';
 import React from 'react';
 import {useState , useEffect} from 'react'
+import { API_BASE_URL } from '../../config/api';
 
 export function FirstPage () {
 
@@ -13,7 +14,7 @@ useEffect(() => {
   const token = localStorage.getItem("token");
 
   const fetchData = async (status) => {
-    const res = await fetch(`http://localhost:8080/api/testimonials/search?status=${status}`, {
+    const res = await fetch(`${API_BASE_URL}/api/testimonials/search?status=${status}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react"
 import { getTestimonios } from "../../services/testimonios"
+import { API_BASE_URL } from '../../config/api';
 
 export function Embeds () {
 
     const [testimoniosApi , setTestimoniosApi] = useState([])
-    const token = localStorage.getItem("token")
 
     useEffect(() => {
         const obtenerTestimonios = async () => {
-        
+        const token = localStorage.getItem("token")
         try {
-            const res = await fetch("http://localhost:8080/api/testimonials/search?status=PUBLISHED" , {
+            const res = await fetch(`${API_BASE_URL}/api/testimonials/search?status=PUBLISHED` , {
               headers: {
                 Authorization: `Bearer ${token}`
               }
@@ -50,7 +50,7 @@ export function Embeds () {
                 GET /api/testimonials/search?status=APPROVED
             </pre>
             <pre className="bg-black text-green-400 p-4 rounded mt-2">
-                {`fetch("http://localhost:8080/api/testimonials/search?status=PUBLISHED")
+                {`fetch("${API_BASE_URL}/api/testimonials/search?status=PUBLISHED")
                 .then(res => res.json())
                 .then(data => console.log(data));`}
             </pre>

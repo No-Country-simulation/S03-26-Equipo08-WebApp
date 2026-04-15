@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import TextsmsIcon from '@mui/icons-material/Textsms';
 import { useNavigate } from 'react-router';
 import Swal from 'sweetalert2'
+import { API_BASE_URL } from '../../config/api';
 
 export function Moderacion () {
 
@@ -27,7 +28,7 @@ const aprobarTestimonios = async (id) => {
   const token = localStorage.getItem("token")
 
   try {
-    const res = await fetch(`http://localhost:8080/api/testimonials/approve/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/testimonials/approve/${id}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -52,7 +53,7 @@ const aprobarTestimonios = async (id) => {
 const eliminarTestimonio = async (id) => {
   const token = localStorage.getItem("token")
   try {
-    const res = await fetch (`http://localhost:8080/api/testimonials/${id}` , {
+    const res = await fetch (`${API_BASE_URL}/api/testimonials/${id}` , {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -86,7 +87,7 @@ const rechazarTestimonios = async (id) => {
   const token = localStorage.getItem("token")
 
   try {
-    const res = await fetch(`http://localhost:8080/api/testimonials/reject/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/testimonials/reject/${id}`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`
@@ -115,7 +116,7 @@ useEffect(() => {
     const token = localStorage.getItem("token")
 
     try {
-      const res = await fetch("http://localhost:8080/api/testimonials/search?status=PENDING", {
+      const res = await fetch(`${API_BASE_URL}/api/testimonials/search?status=PENDING`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

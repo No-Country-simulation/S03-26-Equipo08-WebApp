@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../../config/api';
 
 const Categorias = () => {
   const [categories, setCategories] = useState([]);
@@ -14,7 +15,7 @@ const Categorias = () => {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/api/categories', {
+      const response = await fetch(`${API_BASE_URL}/api/categories`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
 
@@ -48,7 +49,7 @@ const Categorias = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:8080/api/categories', {
+      const response = await fetch(`${API_BASE_URL}/api/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +73,7 @@ const Categorias = () => {
     const id = confirmModal.id;
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`http://localhost:8080/api/categories/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });

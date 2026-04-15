@@ -1,5 +1,6 @@
 import Quantity from "./Quantity"
 import { useState , useEffect } from "react";
+import { API_BASE_URL } from '../../config/api';
 
 
 export function Testimonials () {
@@ -10,7 +11,7 @@ useEffect(() => {
   const traerTestimonios = async () => {
     const token = localStorage.getItem("token")
     try {
-      const res = await fetch ("http://localhost:8080/api/testimonials/search?status=PUBLISHED" , {
+      const res = await fetch (`${API_BASE_URL}/api/testimonials/search?status=PUBLISHED` , {
         headers: {
           Authorization: `Bearer ${token}`
         }

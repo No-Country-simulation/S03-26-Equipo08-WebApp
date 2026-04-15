@@ -3,6 +3,7 @@ import { useLocation, useParams } from "react-router";
 import { useNavigate } from "react-router";
 import toast, { Toaster } from 'react-hot-toast'
 import Swal from 'sweetalert2'
+import { API_BASE_URL } from '../../config/api';
 
 export function NuevoTestimonio () {
 
@@ -33,7 +34,7 @@ export function NuevoTestimonio () {
     
     const urlsValidas = urls.filter(u => u.trim() !== "");
     try {
-    const res = await fetch (`http://localhost:8080/api/media/youtube-batch/${id}` , {
+    const res = await fetch (`${API_BASE_URL}/api/media/youtube-batch/${id}` , {
       method:"POST",
         headers: {
           "Content-Type" : "application/json",
@@ -73,7 +74,7 @@ export function NuevoTestimonio () {
     });
 
     try {
-      const res = await fetch (`http://localhost:8080/api/media/upload-batch/${id}` , {
+      const res = await fetch (`${API_BASE_URL}/api/media/upload-batch/${id}` , {
         method:"POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -157,8 +158,8 @@ const handleSubmit = async (e) => {
 
   try {
     const url = id
-    ? `http://localhost:8080/api/testimonials/${id}`
-    : `http://localhost:8080/api/testimonials`
+    ? `${API_BASE_URL}/api/testimonials/${id}`
+    : `${API_BASE_URL}/api/testimonials`
 
     const method = id ? "PUT" : "POST";
     
@@ -198,7 +199,7 @@ const handleSubmit = async (e) => {
     
     // 🔥 TRAER TESTIMONIO ACTUALIZADO
 const resUpdated = await fetch(
-  `http://localhost:8080/api/testimonials/${data.id}`,
+  `${API_BASE_URL}/api/testimonials/${data.id}`,
   {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -238,7 +239,7 @@ useEffect(() => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:8080/api/categories?type=APPROVED", {
+      const res = await fetch(`${API_BASE_URL}/api/categories?type=APPROVED`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -262,7 +263,7 @@ useEffect(() => {
   const traerTestimonio = async () => {
     const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:8080/api/testimonials/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/api/testimonials/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

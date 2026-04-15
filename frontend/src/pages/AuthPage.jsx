@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthPage = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const [loginError, setLoginError] = useState(false); // Estado para el error de contraseña
+  const [loginError, setLoginError] = useState(false); 
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -11,7 +11,7 @@ const AuthPage = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    if (loginError) setLoginError(false); // Limpia el error al escribir de nuevo
+    if (loginError) setLoginError(false); 
   };
 
   const handleSubmit = async (e) => {
@@ -25,54 +25,25 @@ const AuthPage = () => {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Guardamos el token (Tu lógica)
         if(data.token) localStorage.setItem('token', data.token); 
+
+        // Guardamos el usuario (Lógica de Lautaro que es útil)
+        localStorage.setItem("user", JSON.stringify({
+          email: formData.email
+        }));
+
         navigate('/dashboard'); 
       } else {
-        // Si el status es 401 o 403 (error de credenciales)
         setLoginError(true);
       }
     } catch (error) {
-      console.error("Error de conexión");
+      console.error("Error de conexión", error);
     }
   };
 
-
-
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-      const res = await fetch (`http://localhost:8080/api/auth/login` , {
-      method:"POST",
-        headers: {
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        })
-    })
-    const data = await res.json()
-
-    localStorage.setItem("token" , data.token)
-
-    localStorage.setItem("user" , JSON.stringify({
-      email: formData.email
-    }));
-
-    navigate("/dashboard");
-  
-  } catch (error) {
-    console.error("Error al iniciar sesión" , error);
-  }
-};
-
-
-
-  
-
-
-return (
+  return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-100 to-white font-sans px-4">
       <div className="max-w-md w-full bg-white p-10 rounded-2xl shadow-xl border border-gray-100">
         
@@ -122,32 +93,3 @@ return (
 };
 
 export default AuthPage;
-
-
-
-
-/*
-      const { email } = formData;
-
-  // 🔹 Simulación de roles
-      let role = "user";
-
-      if (email === "admin@mail.com") {
-        role = "admin";
-      }
-
-  // 🔹 Guardar role
-  localStorage.setItem("role", role);
-
-  // 🔹 (opcional) guardar usuario
-  localStorage.setItem("user", JSON.stringify({ email, role }));
-
-  // 🔹 Verificar testimonios
-  const testimonios = JSON.parse(localStorage.getItem("testimonios")) || [];
-
-  if (testimonios.length === 0) {
-    navigate("/crear");
-  } else {
-    navigate("/dashboard");
-  }
-*/

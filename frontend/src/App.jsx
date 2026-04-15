@@ -10,9 +10,10 @@ import Moderacion from './components/dashboard/Moderacion';
 
 //MAXI
 import AuthPage from './pages/AuthPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx'; // 1. Importa la nueva página
+import RegisterPage from './pages/RegisterPage.jsx'; 
 import DashboardAuth from './pages/DashboardAuth.jsx';
 import Embeds from './components/dashboard/Embeds.jsx';
+import Categorias from './components/dashboard/Categorias.jsx'; // <--- 1. IMPORTAMOS TU NUEVO COMPONENTE
 
 function App() {
 
@@ -24,7 +25,7 @@ function App() {
         
         {/*Login y Register*/}
         <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<RegisterPage />} /> {/* 2. Agrega la ruta */}
+        <Route path="/register" element={<RegisterPage />} /> 
         <Route path="/dashboardAuth" element={<DashboardAuth />} />
         
         <Route path='/crear' element={<NuevoTestimonio/>}></Route>
@@ -38,6 +39,7 @@ function App() {
           <Route path='testimonios' element={<Testimonios/>}></Route>
           <Route path='moderación' element={<Moderacion/>}></Route>
           <Route path='embeds' element={<Embeds/>}></Route>
+          <Route path='categorias' element={<Categorias/>}></Route> {/* <--- 2. AGREGAMOS LA RUTA */}
         </Route>
       </Routes>
     </>
@@ -45,5 +47,3 @@ function App() {
 }
 
 export default App
-
-//<Route path="*" element={<Navigate to="/" replace />} />

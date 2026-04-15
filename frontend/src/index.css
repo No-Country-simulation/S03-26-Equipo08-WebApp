@@ -1,0 +1,9 @@
+@import "tailwindcss";
+body {
+background: white;
+/* Aseguramos que el degradé cubra todo el viewport */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+}

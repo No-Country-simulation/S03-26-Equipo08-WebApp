@@ -10,10 +10,14 @@ import Moderacion from './components/dashboard/Moderacion';
 
 //MAXI
 import AuthPage from './pages/AuthPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx'; // 1. Importa la nueva página
+import RegisterPage from './pages/RegisterPage.jsx'; 
 import DashboardAuth from './pages/DashboardAuth.jsx';
 import Embeds from './components/dashboard/Embeds.jsx';
+<<<<<<< HEAD
 import ApiDocs from './components/dashboard/ApiDocs.jsx';
+=======
+import Categorias from './components/dashboard/Categorias.jsx'; // <--- 1. IMPORTAMOS TU NUEVO COMPONENTE
+>>>>>>> 95266d98fdea56cfa38039bb5eec166bd0403f3d
 
 function App() {
 
@@ -25,7 +29,7 @@ function App() {
         
         {/*Login y Register*/}
         <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<RegisterPage />} /> {/* 2. Agrega la ruta */}
+        <Route path="/register" element={<RegisterPage />} /> 
         <Route path="/dashboardAuth" element={<DashboardAuth />} />
         
         <Route path='/crear' element={<NuevoTestimonio/>}></Route>
@@ -40,7 +44,11 @@ function App() {
           <Route path='apiDocumento' element={<ApiDocs/>}></Route>
           <Route path='moderación' element={<Moderacion/>}></Route>
           <Route path='embeds' element={<Embeds/>}></Route>
+<<<<<<< HEAD
           <Route path='testimonio/editar/:id' element={<NuevoTestimonio/>}></Route>
+=======
+          <Route path='categorias' element={<Categorias/>}></Route> {/* <--- 2. AGREGAMOS LA RUTA */}
+>>>>>>> 95266d98fdea56cfa38039bb5eec166bd0403f3d
         </Route>
       </Routes>
     </>
@@ -48,5 +56,3 @@ function App() {
 }
 
 export default App
-
-//<Route path="*" element={<Navigate to="/" replace />} />

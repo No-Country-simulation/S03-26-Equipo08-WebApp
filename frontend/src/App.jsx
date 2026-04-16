@@ -12,7 +12,8 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import DashboardAuth from './pages/DashboardAuth.jsx';
 import Embeds from './components/dashboard/Embeds.jsx';
 import ApiDocs from './components/dashboard/ApiDocs.jsx';
-import Categorias from './components/dashboard/Categorias.jsx'; 
+import Categorias from './components/dashboard/Categorias.jsx';
+import ProtectedRoute from './components/ProtectedRoute'; 
 
 function App() {
 
@@ -31,8 +32,12 @@ function App() {
 
         <Route path="/home" element={<Header/>} />
 
-        {/*Dashboard*/}
-        <Route path='/dashboard' element={<DashboardLayout/>}>
+        {/*Dashboard - Rutas protegidas*/}
+        <Route path='/dashboard' element={
+          <ProtectedRoute>
+            <DashboardLayout/>
+          </ProtectedRoute>
+        }>
           <Route index element={<FirstPage/>}/>
           <Route path='nuevoTestimonio' element={<NuevoTestimonio/>}></Route>
           <Route path='testimonios' element={<Testimonios/>}></Route>

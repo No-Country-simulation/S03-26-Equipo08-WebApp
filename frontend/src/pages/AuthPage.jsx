@@ -36,7 +36,9 @@ const AuthPage = () => {
           email: formData.email
         }));
 
-        navigate('/dashboard'); 
+        // Redirige a la ruta original o al dashboard por defecto
+        const from = location.state?.from?.pathname || '/dashboard';
+        navigate(from, { replace: true }); 
       } else {
         setLoginError(true);
       }
